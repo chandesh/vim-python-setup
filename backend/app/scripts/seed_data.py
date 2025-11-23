@@ -89,6 +89,7 @@ def seed_extended_agents(db: Session, categories, tags):
     code_tag = next((t for t in tags if t.slug == "code-generation"), None)
     image_tag = next((t for t in tags if t.slug == "image-generation"), None)
     auto_tag = next((t for t in tags if t.slug == "automation"), None)
+    api_tag = next((t for t in tags if t.slug == "api-integration"), None)
     
     agents = [
         {
@@ -363,6 +364,116 @@ def seed_extended_agents(db: Session, categories, tags):
             "website_url": "https://writesonic.com",
             "category_id": marketing_cat.id if marketing_cat else None,
             "pricing_model": PricingModel.FREEMIUM,
+            "featured": False,
+            "tags": [conv_tag] if conv_tag else []
+        },
+        {
+            "name": "Notion",
+            "slug": "notion",
+            "description": "Notion is an all-in-one workspace with AI capabilities for notes, docs, wikis, and project management.",
+            "short_description": "All-in-one workspace with AI",
+            "website_url": "https://notion.so",
+            "category_id": productivity_cat.id if productivity_cat else None,
+            "pricing_model": PricingModel.FREEMIUM,
+            "featured": False,
+            "tags": [auto_tag] if auto_tag else []
+        },
+        {
+            "name": "Stable Diffusion",
+            "slug": "stable-diffusion",
+            "description": "Stable Diffusion is an open-source AI image generation model that creates images from text descriptions.",
+            "short_description": "Open-source AI image generator",
+            "website_url": "https://stability.ai",
+            "category_id": content_cat.id if content_cat else None,
+            "pricing_model": PricingModel.FREE,
+            "featured": False,
+            "tags": [image_tag] if image_tag else []
+        },
+        {
+            "name": "DALL-E",
+            "slug": "dall-e",
+            "description": "DALL-E by OpenAI creates realistic images and art from natural language descriptions.",
+            "short_description": "OpenAI's image generation AI",
+            "website_url": "https://openai.com/dall-e",
+            "category_id": content_cat.id if content_cat else None,
+            "pricing_model": PricingModel.PAID,
+            "featured": False,
+            "tags": [image_tag] if image_tag else []
+        },
+        {
+            "name": "Anthropic Claude API",
+            "slug": "claude-api",
+            "description": "Claude API provides programmatic access to Anthropic's Claude models for building AI applications.",
+            "short_description": "API access to Claude",
+            "website_url": "https://anthropic.com/api",
+            "category_id": dev_cat.id if dev_cat else None,
+            "pricing_model": PricingModel.PAID,
+            "featured": False,
+            "tags": [conv_tag] if conv_tag else []
+        },
+        {
+            "name": "Replicate",
+            "slug": "replicate",
+            "description": "Replicate runs machine learning models in the cloud with a simple API for AI image, video, and text generation.",
+            "short_description": "Run ML models via API",
+            "website_url": "https://replicate.com",
+            "category_id": dev_cat.id if dev_cat else None,
+            "pricing_model": PricingModel.PAID,
+            "featured": False,
+            "tags": [api_tag] if api_tag else []
+        },
+        {
+            "name": "Character.AI",
+            "slug": "character-ai",
+            "description": "Character.AI lets you create and chat with AI characters with distinct personalities and conversation styles.",
+            "short_description": "Chat with AI characters",
+            "website_url": "https://character.ai",
+            "category_id": productivity_cat.id if productivity_cat else None,
+            "pricing_model": PricingModel.FREEMIUM,
+            "featured": False,
+            "tags": [conv_tag] if conv_tag else []
+        },
+        {
+            "name": "Anthropic Console",
+            "slug": "anthropic-console",
+            "description": "Anthropic Console provides a web interface for testing and developing with Claude AI models.",
+            "short_description": "Claude development console",
+            "website_url": "https://console.anthropic.com",
+            "category_id": dev_cat.id if dev_cat else None,
+            "pricing_model": PricingModel.FREEMIUM,
+            "featured": False,
+            "tags": [code_tag] if code_tag else []
+        },
+        {
+            "name": "Hugging Face",
+            "slug": "hugging-face",
+            "description": "Hugging Face is an AI community platform providing access to thousands of open-source ML models and datasets.",
+            "short_description": "Open-source AI model hub",
+            "website_url": "https://huggingface.co",
+            "category_id": dev_cat.id if dev_cat else None,
+            "pricing_model": PricingModel.FREEMIUM,
+            "featured": False,
+            "tags": [api_tag] if api_tag else []
+        },
+        {
+            "name": "Pi AI",
+            "slug": "pi-ai",
+            "description": "Pi is a personal AI assistant by Inflection AI designed for supportive and empathetic conversations.",
+            "short_description": "Personal AI by Inflection AI",
+            "website_url": "https://pi.ai",
+            "category_id": productivity_cat.id if productivity_cat else None,
+            "pricing_model": PricingModel.FREE,
+            "featured": False,
+            "tags": [conv_tag] if conv_tag else []
+        },
+        {
+            "name": "Bard (now Gemini)",
+            "slug": "bard",
+            "description": "Bard, now rebranded as Gemini, is Google's conversational AI service for creative and informative interactions.",
+            "short_description": "Google's AI chatbot",
+            "website_url": "https://bard.google.com",
+            "category_id": productivity_cat.id if productivity_cat else None,
+            "pricing_model": PricingModel.FREE,
             "featured": False,
             "tags": [conv_tag] if conv_tag else []
         },
