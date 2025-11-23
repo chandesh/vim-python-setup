@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api import categories
+from app.api import categories, agents
 
 app = FastAPI(
     title=settings.api_title,
@@ -21,6 +21,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(categories.router)
+app.include_router(agents.router)
 
 
 @app.get("/health")
