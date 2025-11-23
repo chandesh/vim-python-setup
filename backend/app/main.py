@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.api import categories
 
 app = FastAPI(
     title=settings.api_title,
     version=settings.api_version,
-    debug=settings.debug
+    debug=settings.debug,
+    description="AI Agent Hub API - Discover and compare AI agents and MCP servers"
 )
 
 # Add CORS middleware
@@ -16,6 +18,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register routers
+app.include_router(categories.router)
 
 
 @app.get("/health")
