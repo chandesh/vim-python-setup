@@ -54,43 +54,43 @@ help:
 
 # Initialize project
 init:
-	@echo "🚀 Initializing AI Agent Hub project..."
+	@echo "Initializing AI Agent Hub project..."
 	@echo ""
 	@echo "Step 1: Checking prerequisites..."
-	@command -v docker >/dev/null 2>&1 || { echo "❌ Docker is required but not installed. Aborting."; exit 1; }
-	@command -v docker-compose >/dev/null 2>&1 || { echo "❌ Docker Compose is required but not installed. Aborting."; exit 1; }
-	@echo "✅ Docker and Docker Compose are installed"
+	@command -v docker >/dev/null 2>&1 || { echo "[ERROR] Docker is required but not installed. Aborting."; exit 1; }
+	@command -v docker-compose >/dev/null 2>&1 || { echo "[ERROR] Docker Compose is required but not installed. Aborting."; exit 1; }
+	@echo "[OK] Docker and Docker Compose are installed"
 	@echo ""
 	@echo "Step 2: Creating .env file for backend..."
 	@if [ ! -f backend/.env ]; then \
 		cp backend/.env.example backend/.env; \
-		echo "✅ Created backend/.env from .env.example"; \
+		echo "[OK] Created backend/.env from .env.example"; \
 	else \
-		echo "⚠️  backend/.env already exists, skipping"; \
+		echo "[WARN] backend/.env already exists, skipping"; \
 	fi
 	@echo ""
 	@echo "Step 3: Building Docker images..."
 	@docker-compose build
-	@echo "✅ Docker images built successfully"
+	@echo "[OK] Docker images built successfully"
 	@echo ""
 	@echo "Step 4: Starting services..."
 	@docker-compose up -d
-	@echo "✅ Services started"
+	@echo "[OK] Services started"
 	@echo ""
 	@echo "Step 5: Waiting for database to be ready..."
 	@sleep 5
-	@docker exec ai_agent_hub_db pg_isready -U postgres >/dev/null 2>&1 && echo "✅ Database is ready" || echo "⚠️  Database might still be starting"
+	@docker exec ai_agent_hub_db pg_isready -U postgres >/dev/null 2>&1 && echo "[OK] Database is ready" || echo "[WARN] Database might still be starting"
 	@echo ""
-	@echo "✅ Initialization complete!"
+	@echo "[OK] Initialization complete!"
 	@echo ""
-	@echo "📍 Services are running at:"
+	@echo "Services are running at:"
 	@echo "   - Backend API: http://localhost:8333"
 	@echo "   - API Docs: http://localhost:8333/docs"
 	@echo "   - Health Check: http://localhost:8333/health"
 	@echo "   - Frontend: http://localhost:4200 (when ready)"
 	@echo "   - PostgreSQL: localhost:5435"
 	@echo ""
-	@echo "📝 Next steps:"
+	@echo "Next steps:"
 	@echo "   - Run 'make health' to check service status"
 	@echo "   - Run 'make logs' to view service logs"
 	@echo "   - Run 'make help' to see all available commands"
@@ -203,7 +203,7 @@ clean:
 	@echo "Cleanup complete!"
 
 clean-all:
-	@echo "⚠️  WARNING: This will remove all data including database volumes!"
+	@echo "[WARNING] This will remove all data including database volumes!"
 	@read -p "Are you sure? (y/N): " confirm; \
 	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
 		docker-compose down -v; \
@@ -217,10 +217,10 @@ health:
 	@echo "Checking service health..."
 	@echo ""
 	@echo "Backend Health:"
-	@curl -s http://localhost:8333/health | python3 -m json.tool || echo "❌ Backend not responding"
+	@curl -s http://localhost:8333/health | python3 -m json.tool || echo "[ERROR] Backend not responding"
 	@echo ""
 	@echo "Database:"
-	@docker exec ai_agent_hub_db pg_isready -U postgres && echo "✅ Database is healthy" || echo "❌ Database not responding"
+	@docker exec ai_agent_hub_db pg_isready -U postgres && echo "[OK] Database is healthy" || echo "[ERROR] Database not responding"
 	@echo ""
 	@echo "Containers:"
 	@docker-compose ps
