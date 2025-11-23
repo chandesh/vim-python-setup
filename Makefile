@@ -7,6 +7,7 @@ help:
 	@echo ""
 	@echo "Initial Setup:"
 	@echo "  make init            - Initialize project (first time setup)"
+	@echo "  make frontend-setup  - Setup frontend with nvm and dependencies"
 	@echo ""
 	@echo "Starting & Stopping:"
 	@echo "  make up              - Start all services (detached)"
@@ -216,6 +217,11 @@ clean-all:
 	else \
 		echo "Cancelled."; \
 	fi
+
+# Frontend setup
+frontend-setup:
+	@echo "Setting up frontend with nvm..."
+	@bash scripts/frontend-setup.sh
 
 # Health check
 health:
