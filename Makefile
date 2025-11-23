@@ -39,6 +39,7 @@ help:
 	@echo "Database:"
 	@echo "  make db-migrate      - Run database migrations"
 	@echo "  make db-create       - Create new migration"
+	@echo "  make db-seed         - Seed database with sample data"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test            - Run backend tests"
@@ -186,6 +187,10 @@ db-create:
 	@echo "Creating new migration..."
 	@read -p "Migration name: " name; \
 	docker exec -it ai_agent_hub_backend alembic revision --autogenerate -m "$$name"
+
+db-seed:
+	@echo "Seeding database with sample data..."
+	docker exec -it ai_agent_hub_backend python -m app.scripts.seed_data
 
 # Testing
 test:
