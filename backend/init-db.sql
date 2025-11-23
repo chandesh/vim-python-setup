@@ -4,8 +4,8 @@ CREATE USER ai_agent_app WITH PASSWORD 'ai_agent_app_password';
 -- Grant connection to database
 GRANT CONNECT ON DATABASE ai_agent_hub TO ai_agent_app;
 
--- Grant schema usage
-GRANT USAGE ON SCHEMA public TO ai_agent_app;
+-- Grant schema usage and create privileges
+GRANT USAGE, CREATE ON SCHEMA public TO ai_agent_app;
 
 -- Grant table privileges (for all current and future tables)
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ai_agent_app;
