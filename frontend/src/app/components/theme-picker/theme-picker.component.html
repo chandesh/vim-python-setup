@@ -1,0 +1,43 @@
+<div class="theme-picker" role="radiogroup" aria-label="Color theme">
+  @for (theme of themes; track theme.id) {
+    <button
+      type="button"
+      role="radio"
+      class="theme-option"
+      [class.selected]="isSelected(theme.id)"
+      [attr.aria-checked]="isSelected(theme.id)"
+      (click)="selectTheme(theme.id)"
+    >
+      <!-- Visual preview swatch -->
+      <span
+        class="theme-preview"
+        [style.background-color]="theme.swatch.background"
+        aria-hidden="true"
+      >
+        <span
+          class="preview-header-bar"
+          [style.background-color]="theme.swatch.accent"
+        ></span>
+        <span
+          class="preview-card"
+          [style.background-color]="theme.swatch.surface"
+          [style.border-color]="theme.swatch.text"
+        >
+          <span class="preview-line" [style.background-color]="theme.swatch.text"></span>
+          <span class="preview-line short" [style.background-color]="theme.swatch.text"></span>
+        </span>
+        <span
+          class="preview-accent-dot"
+          [style.background-color]="theme.swatch.accent"
+        ></span>
+      </span>
+
+      <span class="theme-meta">
+        <span class="theme-name">{{ theme.name }}</span>
+        <span class="theme-description">{{ theme.description }}</span>
+      </span>
+
+      <span class="theme-radio" [class.checked]="isSelected(theme.id)" aria-hidden="true"></span>
+    </button>
+  }
+</div>

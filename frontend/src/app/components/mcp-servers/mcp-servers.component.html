@@ -1,0 +1,350 @@
+<div class="page-container">
+  <app-header></app-header>
+
+  <!-- Main Content -->
+  <main class="page-content">
+    <!-- Search and Filters -->
+    <div class="filter-container">
+      <div class="space-y-4">
+        <!-- Search Bar -->
+        <div>
+          <label for="search" class="search-label">🔍 Search MCP Servers</label>
+          <div class="search-container">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+            <input
+              type="text"
+              id="search"
+              [(ngModel)]="searchQuery"
+              (keyup.enter)="onSearch()"
+              placeholder="Search by name, description, or language..."
+              class="search-input"
+            />
+            <button
+              (click)="onSearch()"
+              class="search-button"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0013 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 000-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/>
+              </svg>
+              Search
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters Row -->
+        <div class="filters-grid">
+          <!-- Category Filter -->
+          <div class="filter-group">
+            <label for="category" class="filter-label">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                <path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v4a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 7.5v-4zm0 7A1.5 1.5 0 013.5 9h3A1.5 1.5 0 018 10.5v2A1.5 1.5 0 016.5 14h-3A1.5 1.5 0 012 12.5v-2zm7 0A1.5 1.5 0 0110.5 9h2a1.5 1.5 0 011.5 1.5v2a1.5 1.5 0 01-1.5 1.5h-2A1.5 1.5 0 019 12.5v-2z"/>
+              </svg>
+              Category
+            </label>
+            <select
+              id="category"
+              [(ngModel)]="selectedCategory"
+              (change)="onFilterChange()"
+              class="filter-select"
+            >
+              <option value="">All Categories</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Language Filter -->
+          <div class="filter-group">
+            <label for="language" class="filter-label">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                <path d="M4.545 6.714L4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286H4.545zm1.634-.736L5.5 3.956h-.049l-.679 2.022H6.18z"/>
+                <path d="M0 2a2 2 0 012-2h7a2 2 0 012 2v3h3a2 2 0 012 2v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-3H2a2 2 0 01-2-2V2zm2-1a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1V2a1 1 0 00-1-1H2zm7.138 9.995c.193.301.402.583.63.846-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6.066 6.066 0 01-.415-.492 1.988 1.988 0 01-.94.31z"/>
+              </svg>
+              Language
+            </label>
+            <select
+              id="language"
+              [(ngModel)]="selectedLanguage"
+              (change)="onFilterChange()"
+              class="filter-select"
+            >
+              <option value="">All Languages</option>
+              <option *ngFor="let language of languages" [value]="language">
+                {{ language }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Scope Filter -->
+          <div class="filter-group">
+            <label for="scope" class="filter-label">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                <path d="M0 8a8 8 0 1116 0A8 8 0 010 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 005.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 01.64-1.539 6.7 6.7 0 01.597-.933A7.025 7.025 0 002.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 00-.656 2.5h2.49zM4.847 5a12.5 12.5 0 00-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 00-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 00.337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 01-.597-.933A9.268 9.268 0 014.09 12H2.255a7.024 7.024 0 003.072 2.472zM3.82 11a13.652 13.652 0 01-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0013.745 12H11.91a9.27 9.27 0 01-.64 1.539 6.688 6.688 0 01-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 01-.312 2.5zm2.802-3.5a6.959 6.959 0 00-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 00-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 00-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z"/>
+              </svg>
+              Scope
+            </label>
+            <select
+              id="scope"
+              [(ngModel)]="selectedScope"
+              (change)="onFilterChange()"
+              class="filter-select"
+            >
+              <option value="">All Scopes</option>
+              <option value="local">💻 Local</option>
+              <option value="cloud">☁️ Cloud</option>
+              <option value="hybrid">🔄 Hybrid</option>
+            </select>
+          </div>
+
+          <!-- Sort Filter -->
+          <div class="filter-group">
+            <label for="sort" class="filter-label">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                <path d="M3 2.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zM3 7a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7A.5.5 0 013 7zm0 4.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5z"/>
+              </svg>
+              Sort By
+            </label>
+            <select
+              id="sort"
+              [(ngModel)]="selectedSort"
+              (change)="onFilterChange()"
+              class="filter-select"
+            >
+              <option value="star_count_desc">Most Popular</option>
+              <option value="star_count_asc">Least Popular</option>
+              <option value="created_at_desc">Newest First</option>
+              <option value="created_at_asc">Oldest First</option>
+              <option value="name_asc">Name (A-Z)</option>
+              <option value="name_desc">Name (Z-A)</option>
+              <option value="view_count_desc">Most Viewed</option>
+              <option value="view_count_asc">Least Viewed</option>
+            </select>
+          </div>
+
+          <!-- Featured Filter -->
+          <div class="filter-group featured-toggle">
+            <label class="featured-label">
+              <input
+                type="checkbox"
+                [(ngModel)]="showFeaturedOnly"
+                (change)="onFilterChange()"
+                class="featured-checkbox"
+              />
+              <span class="featured-text">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                  <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
+                </svg>
+                Featured Only
+              </span>
+            </label>
+          </div>
+
+          <!-- Clear Filters -->
+          <div class="filter-group clear-filters-group">
+            <button
+              (click)="clearFilters()"
+              class="clear-filters-button"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="mr-2">
+                <path fill-rule="evenodd" d="M8 2a.5.5 0 01.5.5v5h5a.5.5 0 010 1h-5v5a.5.5 0 01-1 0v-5h-5a.5.5 0 010-1h5v-5A.5.5 0 018 2z" clip-rule="evenodd" transform="rotate(45 8 8)"/>
+              </svg>
+              Clear All
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="results-summary">
+      <div class="results-count">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" class="results-icon">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+        </svg>
+        <span class="results-text">
+          Showing <strong>{{ servers.length }}</strong> of <strong>{{ totalServers }}</strong> MCP servers
+        </span>
+      </div>
+      <div *ngIf="searchQuery || selectedCategory || selectedLanguage || selectedScope || showFeaturedOnly" class="active-filters">
+        <span class="filter-badge" *ngIf="searchQuery">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <path d="M6 2a4 4 0 100 8 4 4 0 000-8z"/>
+          </svg>
+          "{{ searchQuery }}"
+        </span>
+        <span class="filter-badge" *ngIf="selectedCategory">
+          Category: {{ getCategoryName(selectedCategory) }}
+        </span>
+        <span class="filter-badge" *ngIf="selectedLanguage">
+          {{ selectedLanguage }}
+        </span>
+        <span class="filter-badge" *ngIf="selectedScope">
+          {{ selectedScope | titlecase }}
+        </span>
+        <span class="filter-badge" *ngIf="showFeaturedOnly">
+          ⭐ Featured
+        </span>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2" style="border-color: var(--color-blue);"></div>
+      <p class="mt-4" style="color: var(--text-secondary);">Loading MCP servers...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="alert-error rounded-lg p-4 mb-6">
+      <p style="color: var(--color-red);">{{ error }}</p>
+    </div>
+
+    <!-- Servers Grid -->
+    <div *ngIf="!loading && !error" class="agents-grid">
+      <div *ngFor="let server of servers" class="agent-card">
+        <!-- Server Header -->
+        <div class="card-header">
+          <div class="flex items-start gap-3">
+            <!-- Logo -->
+            <div class="server-logo">
+              <ng-container *ngIf="server.logo_url; else fallbackLogo">
+                <img 
+                  [src]="server.logo_url" 
+                  [alt]="server.name + ' logo'"
+                  (error)="server.logo_url = null"
+                  class="logo-image"
+                />
+              </ng-container>
+              <ng-template #fallbackLogo>
+                <div class="logo-fallback">
+                  <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M2.5 3.5a.5.5 0 010-1h11a.5.5 0 010 1h-11zm2-2a.5.5 0 010-1h7a.5.5 0 010 1h-7zM0 8a2 2 0 012-2h12a2 2 0 012 2v5a2 2 0 01-2 2H2a2 2 0 01-2-2V8zm1 3v2a1 1 0 001 1h12a1 1 0 001-1v-2H1zm14-1V8a1 1 0 00-1-1H2a1 1 0 00-1 1v2h14zM2 8.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0 4a.5.5 0 01.5-.5h6a.5.5 0 010 1h-6a.5.5 0 01-.5-.5z"/>
+                  </svg>
+                </div>
+              </ng-template>
+            </div>
+            
+            <div class="flex-1">
+              <h3 class="card-title">{{ server.name }}</h3>
+              <p *ngIf="server.category" class="card-category">{{ server.category.name }}</p>
+            </div>
+            
+            <span *ngIf="server.featured" class="featured-badge">
+              Featured
+            </span>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
+          <!-- Description -->
+          <p class="card-description line-clamp-3">{{ server.description }}</p>
+
+          <!-- Language and Scope -->
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span *ngIf="server.language" class="language-badge">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                <path d="M5.5 2A1.5 1.5 0 007 .5h2A1.5 1.5 0 0010.5 2v.5h1.75a.75.75 0 010 1.5H12v1h.25a.75.75 0 010 1.5H12v1h.25a.75.75 0 010 1.5H12v1h.25a.75.75 0 010 1.5H12v1h.25a.75.75 0 010 1.5H4V12a.75.75 0 010-1.5H4.25V9H4a.75.75 0 010-1.5h.25V6H4a.75.75 0 010-1.5h.25V3H4a.75.75 0 010-1.5h1.5V2z"/>
+              </svg>
+              {{ server.language }}
+            </span>
+            <span *ngIf="server.scope" [class]="getScopeBadgeClass(server.scope)">
+              {{ server.scope | titlecase }}
+            </span>
+          </div>
+
+          <!-- Tags -->
+          <div *ngIf="server.tags && server.tags.length > 0" class="card-tags">
+            <span *ngFor="let tag of server.tags.slice(0, 3)" class="tag">
+              {{ tag.name }}
+            </span>
+            <span *ngIf="server.tags.length > 3" class="tag">
+              +{{ server.tags.length - 3 }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="card-footer">
+          <div class="flex items-center gap-2">
+            <span *ngIf="server.star_count" class="star-count">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
+              </svg>
+              {{ formatStars(server.star_count) }}
+            </span>
+            <span *ngIf="server.view_count" class="view-count">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 2c-3.1 0-5.9 2.1-6.9 5 1 2.9 3.8 5 6.9 5s5.9-2.1 6.9-5c-1-2.9-3.8-5-6.9-5zm0 8.3c-1.8 0-3.3-1.5-3.3-3.3S6.2 3.7 8 3.7s3.3 1.5 3.3 3.3-1.5 3.3-3.3 3.3zm0-5.5c-1.2 0-2.2 1-2.2 2.2s1 2.2 2.2 2.2 2.2-1 2.2-2.2-1-2.2-2.2-2.2z"/>
+              </svg>
+              {{ server.view_count }}
+            </span>
+          </div>
+          <a
+            [href]="server.repository_url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="visit-link"
+          >
+            View Repo →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !error && servers.length === 0" class="text-center py-12">
+      <p style="color: var(--text-secondary); font-size: 1.125rem;">No MCP servers found matching your criteria.</p>
+      <button
+        (click)="clearFilters()"
+        class="mt-4 px-4 py-2 rounded-lg"
+        style="background: linear-gradient(135deg, var(--color-blue), var(--color-cyan)); color: white; border: none; cursor: pointer;"
+      >
+        Clear Filters
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!loading && !error && totalPages > 1" class="pagination-container">
+      <button
+        (click)="onPageChange(currentPage - 1)"
+        [disabled]="currentPage === 1"
+        class="pagination-button"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path fill-rule="evenodd" d="M11.354 4.646a.5.5 0 010 .708L8.207 8.5l3.147 3.146a.5.5 0 01-.708.708l-3.5-3.5a.5.5 0 010-.708l3.5-3.5a.5.5 0 01.708 0z" clip-rule="evenodd"/>
+        </svg>
+        <span class="pagination-text">Previous</span>
+      </button>
+
+      <div class="pagination-pages">
+        <button
+          *ngFor="let page of getPageNumbers()"
+          (click)="onPageChange(page)"
+          [class.active]="currentPage === page"
+          class="pagination-page"
+        >
+          {{ page }}
+        </button>
+      </div>
+
+      <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button
+        (click)="onPageChange(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+        class="pagination-button"
+      >
+        <span class="pagination-text">Next</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 01.708 0L8.5 7.793l3.146-3.147a.5.5 0 01.708.708l-3.5 3.5a.5.5 0 01-.708 0l-3.5-3.5a.5.5 0 010-.708z" clip-rule="evenodd" transform="rotate(-90 8 8)"/>
+        </svg>
+      </button>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>

@@ -1,0 +1,308 @@
+<div class="page-container">
+  <app-header></app-header>
+
+  <!-- Main Content -->
+  <main class="page-content">
+    <!-- Search and Filters -->
+    <div class="filter-container">
+      <div class="space-y-4">
+        <!-- Search Bar -->
+        <div>
+          <label for="search" class="search-label">🔍 Search Agents</label>
+          <div class="search-container">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+            <input
+              type="text"
+              id="search"
+              [(ngModel)]="searchQuery"
+              (keyup.enter)="onSearch()"
+              placeholder="Search by name, description, or category..."
+              class="search-input"
+            />
+            <button
+              (click)="onSearch()"
+              class="search-button"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0013 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 000-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/>
+              </svg>
+              Search
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters Row -->
+        <div class="filters-grid">
+          <!-- Category Filter -->
+          <div class="filter-group">
+            <label for="category" class="filter-label">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                <path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v4a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 7.5v-4zm0 7A1.5 1.5 0 013.5 9h3A1.5 1.5 0 018 10.5v2A1.5 1.5 0 016.5 14h-3A1.5 1.5 0 012 12.5v-2zm7 0A1.5 1.5 0 0110.5 9h2a1.5 1.5 0 011.5 1.5v2a1.5 1.5 0 01-1.5 1.5h-2A1.5 1.5 0 019 12.5v-2z"/>
+              </svg>
+              Category
+            </label>
+            <select
+              id="category"
+              [(ngModel)]="selectedCategory"
+              (change)="onFilterChange()"
+              class="filter-select"
+            >
+              <option value="">All Categories</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Pricing Filter -->
+          <div class="filter-group">
+            <label for="pricing" class="filter-label">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                <path d="M8 15A7 7 0 108 1a7 7 0 000 14zm0-2A5 5 0 108 3a5 5 0 000 10zm.5-8.5v1h1a.5.5 0 010 1h-1v1.5a.5.5 0 01-1 0V6.5h-1a.5.5 0 010-1h1v-1a.5.5 0 011 0zm-1 5v2a.5.5 0 001 0v-2a.5.5 0 00-1 0z"/>
+              </svg>
+              Pricing
+            </label>
+            <select
+              id="pricing"
+              [(ngModel)]="selectedPricing"
+              (change)="onFilterChange()"
+              class="filter-select"
+            >
+              <option value="">All Pricing</option>
+              <option value="free">💚 Free</option>
+              <option value="freemium">💙 Freemium</option>
+              <option value="paid">💜 Paid</option>
+            </select>
+          </div>
+
+          <!-- Sort Filter -->
+          <div class="filter-group">
+            <label for="sort" class="filter-label">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                <path d="M3 2.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zM3 7a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7A.5.5 0 013 7zm0 4.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5z"/>
+              </svg>
+              Sort By
+            </label>
+            <select
+              id="sort"
+              [(ngModel)]="selectedSort"
+              (change)="onFilterChange()"
+              class="filter-select"
+            >
+              <option value="created_at_desc">Newest First</option>
+              <option value="created_at_asc">Oldest First</option>
+              <option value="name_asc">Name (A-Z)</option>
+              <option value="name_desc">Name (Z-A)</option>
+              <option value="view_count_desc">Most Viewed</option>
+              <option value="view_count_asc">Least Viewed</option>
+            </select>
+          </div>
+
+          <!-- Featured Filter -->
+          <div class="filter-group featured-toggle">
+            <label class="featured-label">
+              <input
+                type="checkbox"
+                [(ngModel)]="showFeaturedOnly"
+                (change)="onFilterChange()"
+                class="featured-checkbox"
+              />
+              <span class="featured-text">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                  <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
+                </svg>
+                Featured Only
+              </span>
+            </label>
+          </div>
+
+          <!-- Clear Filters -->
+          <div class="filter-group clear-filters-group">
+            <button
+              (click)="clearFilters()"
+              class="clear-filters-button"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="mr-2">
+                <path fill-rule="evenodd" d="M8 2a.5.5 0 01.5.5v5h5a.5.5 0 010 1h-5v5a.5.5 0 01-1 0v-5h-5a.5.5 0 010-1h5v-5A.5.5 0 018 2z" clip-rule="evenodd" transform="rotate(45 8 8)"/>
+              </svg>
+              Clear All
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="results-summary">
+      <div class="results-count">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" class="results-icon">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+        </svg>
+        <span class="results-text">
+          Showing <strong>{{ agents.length }}</strong> of <strong>{{ totalAgents }}</strong> agents
+        </span>
+      </div>
+      <div *ngIf="searchQuery || selectedCategory || selectedPricing || showFeaturedOnly" class="active-filters">
+        <span class="filter-badge" *ngIf="searchQuery">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <path d="M6 2a4 4 0 100 8 4 4 0 000-8z"/>
+          </svg>
+          "{{ searchQuery }}"
+        </span>
+        <span class="filter-badge" *ngIf="selectedCategory">
+          Category: {{ getCategoryName(selectedCategory) }}
+        </span>
+        <span class="filter-badge" *ngIf="selectedPricing">
+          {{ selectedPricing | titlecase }}
+        </span>
+        <span class="filter-badge" *ngIf="showFeaturedOnly">
+          ⭐ Featured
+        </span>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2" style="border-color: var(--color-blue);"></div>
+      <p class="mt-4" style="color: var(--text-secondary);">Loading agents...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="alert-error rounded-lg p-4 mb-6">
+      <p style="color: var(--color-red);">{{ error }}</p>
+    </div>
+
+    <!-- Agents Grid -->
+    <div *ngIf="!loading && !error" class="agents-grid">
+      <div *ngFor="let agent of agents" class="agent-card">
+        <!-- Agent Header -->
+        <div class="card-header">
+          <div class="flex items-start gap-3">
+            <!-- Logo -->
+            <div class="agent-logo">
+              <ng-container *ngIf="agent.logo_url; else fallbackLogo">
+                <img 
+                  [src]="agent.logo_url" 
+                  [alt]="agent.name + ' logo'"
+                  (error)="agent.logo_url = null"
+                  class="logo-image"
+                />
+              </ng-container>
+              <ng-template #fallbackLogo>
+                <div class="logo-fallback">
+                  <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 8a3 3 0 100-6 3 3 0 000 6zm2-3a2 2 0 11-4 0 2 2 0 014 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                  </svg>
+                </div>
+              </ng-template>
+            </div>
+            
+            <div class="flex-1">
+              <h3 class="card-title">{{ agent.name }}</h3>
+              <p *ngIf="agent.category" class="card-category">{{ agent.category.name }}</p>
+            </div>
+            
+            <span *ngIf="agent.featured" class="featured-badge">
+              Featured
+            </span>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
+          <!-- Description -->
+          <p class="card-description line-clamp-3">{{ agent.description }}</p>
+
+          <!-- Tags -->
+          <div *ngIf="agent.tags && agent.tags.length > 0" class="card-tags">
+            <span *ngFor="let tag of agent.tags.slice(0, 3)" class="tag">
+              {{ tag.name }}
+            </span>
+            <span *ngIf="agent.tags.length > 3" class="tag">
+              +{{ agent.tags.length - 3 }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="card-footer">
+          <span [class]="getPricingBadgeClass(agent.pricing_model)">
+            {{ agent.pricing_model | titlecase }}
+          </span>
+          <a
+            [href]="agent.website_url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="visit-link"
+          >
+            Visit Site →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !error && agents.length === 0" class="text-center py-12">
+      <p class="text-lg" style="color: var(--text-secondary);">No agents found matching your criteria.</p>
+      <button
+        (click)="clearFilters()"
+        class="btn-primary mt-4"
+      >
+        Clear Filters
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!loading && !error && totalPages > 1" class="pagination-container">
+      <nav class="pagination-nav">
+        <!-- Previous Button -->
+        <button
+          (click)="onPageChange(currentPage - 1)"
+          [disabled]="currentPage === 1"
+          class="pagination-btn pagination-prev"
+          [class.disabled]="currentPage === 1"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+          <span class="pagination-label">Previous</span>
+        </button>
+        
+        <!-- Page Numbers -->
+        <div class="pagination-numbers">
+          <button
+            *ngFor="let page of [].constructor(totalPages); let i = index"
+            (click)="onPageChange(i + 1)"
+            class="pagination-number"
+            [class.active]="currentPage === i + 1"
+          >
+            {{ i + 1 }}
+          </button>
+        </div>
+
+        <!-- Next Button -->
+        <button
+          (click)="onPageChange(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+          class="pagination-btn pagination-next"
+          [class.disabled]="currentPage === totalPages"
+        >
+          <span class="pagination-label">Next</span>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </nav>
+      
+      <!-- Page Info -->
+      <div class="page-info">
+        Page <strong>{{ currentPage }}</strong> of <strong>{{ totalPages }}</strong>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>

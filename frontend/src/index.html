@@ -2,12 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Frontend</title>
+  <title>AI Agent Hub - Discover AI Agents and MCP Servers</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta name="description" content="Discover and explore AI agents and MCP servers. Search, filter, and find the perfect AI agent for your needs.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
 <body>
+  <script>
+    // Apply saved/system theme before app bootstrap to avoid a flash of the wrong theme
+    (function () {
+      var THEMES = ['slate-clean', 'midnight-cyber', 'warm-enterprise', 'solarized-light', 'solarized-dark'];
+      var theme = null;
+      try { theme = localStorage.getItem('user_preferred_theme'); } catch (e) {}
+      if (THEMES.indexOf(theme) === -1) {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'midnight-cyber'
+          : 'slate-clean';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <app-root></app-root>
 </body>
 </html>

@@ -1,4 +1,278 @@
-/* You can add global styles to this file, and also import other style files */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Global styles - AI Agent Hub multi-theme engine */
+@import "tailwindcss";
+
+@layer base {
+  /* ============================================================
+   * THEME ENGINE
+   * Themes: slate-clean (default light), midnight-cyber (default dark),
+   *         warm-enterprise (Cohere-inspired warm enterprise).
+   * Applied via [data-theme="<id>"] on <html> by ThemeService.
+   * ============================================================ */
+
+  /* Default: Slate Clean (Default Light) */
+  :root,
+  [data-theme="slate-clean"] {
+    color-scheme: light;
+
+    --bg-primary: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --border-color: #e2e8f0;
+    --accent-primary: #2563eb;
+    --accent-hover: #1d4ed8;
+
+    /* Semantic aliases used across app components */
+    --bg-secondary: var(--bg-surface);
+    --bg-highlight: #f1f5f9;
+    --accent-secondary: #0284c7;
+    --accent-contrast: #ffffff;
+    --accent-soft: rgba(37, 99, 235, 0.1);
+
+    /* Compatibility palette slots consumed by feature components */
+    --color-blue: #2563eb;
+    --color-cyan: #0284c7;
+    --color-violet: #7c3aed;
+    --color-magenta: #db2777;
+    --color-yellow: #d97706;
+    --color-red: #dc2626;
+    --color-green: #16a34a;
+    --color-base3: #ffffff;
+  }
+
+  /* Midnight Cyber (Default Dark) */
+  [data-theme="midnight-cyber"] {
+    color-scheme: dark;
+
+    --bg-primary: #090d16;
+    --bg-surface: #111827;
+    --bg-card: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --border-color: #374151;
+    --accent-primary: #6366f1;
+    --accent-hover: #4f46e5;
+
+    /* Semantic aliases used across app components */
+    --bg-secondary: var(--bg-surface);
+    --bg-highlight: #1a2332;
+    --accent-secondary: #8b5cf6;
+    --accent-contrast: #f9fafb;
+    --accent-soft: rgba(99, 102, 241, 0.18);
+
+    /* Compatibility palette slots consumed by feature components */
+    --color-blue: #818cf8;
+    --color-cyan: #a78bfa;
+    --color-violet: #a78bfa;
+    --color-magenta: #f472b6;
+    --color-yellow: #fbbf24;
+    --color-red: #f87171;
+    --color-green: #4ade80;
+    --color-base3: #f9fafb;
+  }
+
+  /* Warm Enterprise (New - Cohere-inspired warm stone/beige design) */
+  [data-theme="warm-enterprise"] {
+    color-scheme: light;
+
+    --bg-primary: #fbf9f5;
+    --bg-surface: #f4f0ea;
+    --bg-card: #ffffff;
+    --text-primary: #1c1917;
+    --text-secondary: #57534e;
+    --border-color: #e7e5e4;
+    --accent-primary: #292524;
+    --accent-hover: #44403c;
+
+    /* Semantic aliases used across app components */
+    --bg-secondary: var(--bg-surface);
+    --bg-highlight: #ede8df;
+    --accent-secondary: #b45309;
+    --accent-contrast: #fbf9f5;
+    --accent-soft: rgba(180, 83, 9, 0.12);
+
+    /* Compatibility palette slots consumed by feature components */
+    --color-blue: #92400e;
+    --color-cyan: #b45309;
+    --color-violet: #57534e;
+    --color-magenta: #78716c;
+    --color-yellow: #d97706;
+    --color-red: #b91c1c;
+    --color-green: #3f6212;
+    --color-base3: #fbf9f5;
+  }
+
+  /* Solarized Light (Classic - refined original light look) */
+  [data-theme="solarized-light"] {
+    color-scheme: light;
+
+    /* Base03-Base3 palette, tuned: crisper text contrast, softer borders,
+       near-white warm cards that lift off the sand surface */
+    --bg-primary: #fdf6e3;
+    --bg-surface: #f2ecdc;
+    --bg-card: #fffcf2;
+    --text-primary: #073642;
+    --text-secondary: #586e75;
+    --border-color: #dfd8c3;
+    --accent-primary: #268bd2;
+    --accent-hover: #1a6ea9;
+
+    /* Semantic aliases used across app components */
+    --bg-secondary: var(--bg-surface);
+    --bg-highlight: #efe8d4;
+    --accent-secondary: #2aa198;
+    --accent-contrast: #fdf6e3;
+    --accent-soft: rgba(38, 139, 210, 0.14);
+
+    /* Compatibility palette slots consumed by feature components */
+    --color-blue: #268bd2;
+    --color-cyan: #2aa198;
+    --color-violet: #6c71c4;
+    --color-magenta: #d33682;
+    --color-yellow: #b58900;
+    --color-red: #dc322f;
+    --color-green: #859900;
+    --color-base3: #fdf6e3;
+  }
+
+  /* Solarized Dark (Classic - refined original dark look) */
+  [data-theme="solarized-dark"] {
+    color-scheme: dark;
+
+    /* Iconic deep-teal canvas, elevated card layer, brighter legible text */
+    --bg-primary: #002b36;
+    --bg-surface: #073642;
+    --bg-card: #0a3d4d;
+    --text-primary: #eee8d5;
+    --text-secondary: #93a1a1;
+    --border-color: #1d4f5e;
+    --accent-primary: #268bd2;
+    --accent-hover: #43a6dd;
+
+    /* Semantic aliases used across app components */
+    --bg-secondary: var(--bg-surface);
+    --bg-highlight: #0e4657;
+    --accent-secondary: #2aa198;
+    --accent-contrast: #fdf6e3;
+    --accent-soft: rgba(38, 139, 210, 0.22);
+
+    /* Compatibility palette slots consumed by feature components */
+    --color-blue: #268bd2;
+    --color-cyan: #2aa198;
+    --color-violet: #839496;
+    --color-magenta: #d33682;
+    --color-yellow: #cb9b00;
+    --color-red: #e44440;
+    --color-green: #97b25c;
+    --color-base3: #fdf6e3;
+  }
+}
+
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-surface) 100%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content wrapper */
+.page-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-content {
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .page-content {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-content {
+    padding: 1rem 0.75rem;
+  }
+}
+
+/* Enhanced form controls */
+input[type="text"],
+input[type="search"],
+select {
+  transition: all 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus,
+select:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  border-color: var(--accent-primary);
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* Improved scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* Themed alert states */
+.alert-error {
+  background-color: color-mix(in srgb, var(--color-red) 10%, transparent);
+  border: 1px solid var(--color-red);
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--accent-primary);
+  color: var(--accent-contrast);
+}
+
+::-moz-selection {
+  background-color: var(--accent-primary);
+  color: var(--accent-contrast);
+}
