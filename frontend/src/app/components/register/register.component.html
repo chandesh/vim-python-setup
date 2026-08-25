@@ -1,0 +1,90 @@
+<div class="page-container">
+  <app-header></app-header>
+
+  <main class="page-content auth-page">
+    <div class="auth-card">
+      <div class="auth-accent"></div>
+      <div class="auth-body">
+        <h1 class="auth-title">Create Account</h1>
+        <p class="auth-subtitle">Join AI Agent Hub to save favorites and track what you discover.</p>
+
+        <!-- Error message -->
+        <div *ngIf="errorMessage()" class="alert alert-error" role="alert">
+          {{ errorMessage() }}
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+          <!-- Username -->
+          <div class="form-group">
+            <label for="username" class="form-label">Username</label>
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              placeholder="e.g. ai_explorer"
+              class="form-input"
+              [class.input-invalid]="username.invalid && username.touched"
+              autocomplete="username"
+            />
+            <span *ngIf="username.invalid && username.touched" class="field-error">
+              <ng-container *ngIf="username.errors?.['required']">Username is required.</ng-container>
+              <ng-container *ngIf="username.errors?.['minlength']">Username must be at least 3 characters.</ng-container>
+              <ng-container *ngIf="username.errors?.['pattern']">Only letters, numbers, underscores and hyphens allowed.</ng-container>
+            </span>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="you@example.com"
+              class="form-input"
+              [class.input-invalid]="email.invalid && email.touched"
+              autocomplete="email"
+            />
+            <span *ngIf="email.invalid && email.touched" class="field-error">
+              <ng-container *ngIf="email.errors?.['required']">Email is required.</ng-container>
+              <ng-container *ngIf="email.errors?.['email']">Please enter a valid email address.</ng-container>
+            </span>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              placeholder="Min 8 characters with letters and numbers"
+              class="form-input"
+              [class.input-invalid]="password.invalid && password.touched"
+              autocomplete="new-password"
+            />
+            <span *ngIf="password.invalid && password.touched" class="field-error">
+              <ng-container *ngIf="password.errors?.['required']">Password is required.</ng-container>
+              <ng-container *ngIf="password.errors?.['passwordStrength']">
+                Password must be at least 8 characters with letters and numbers.
+              </ng-container>
+            </span>
+            <p class="password-hint">At least 8 characters, including letters and numbers.</p>
+          </div>
+
+          <button type="submit" class="submit-button" [disabled]="loading()">
+            <span *ngIf="loading()" class="button-spinner"></span>
+            {{ loading() ? 'Creating account...' : 'Create Account' }}
+          </button>
+        </form>
+
+        <p class="auth-switch">
+          Already have an account?
+          <a routerLink="/login" class="auth-switch-link">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>

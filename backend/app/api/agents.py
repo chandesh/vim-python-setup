@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func, or_
 from typing import Optional
 from uuid import UUID
@@ -9,6 +9,8 @@ from app.models.agent import Agent
 from app.models.tag import Tag
 from app.schemas.agent import (
     AgentCreate,
+    AgentDetailResponse,
+    AgentSummary,
     AgentUpdate,
     AgentResponse,
     AgentListResponse,
@@ -35,8 +37,11 @@ def list_agents(
     Supports filtering by category, pricing model, and featured status.
     Supports sorting by name, created_at, or view_count.
     """
-    query = db.query(Agent)
-    
+    query = db.query(Agent).options(
+        joinedload(Agent.category),
+        joinedload(Agent.tags)
+    )
+
     # Apply filters
     if category_id:
         query = query.filter(Agent.category_id == category_id)
@@ -44,7 +49,7 @@ def list_agents(
         query = query.filter(Agent.pricing_model == pricing_model)
     if featured is not None:
         query = query.filter(Agent.featured == featured)
-    
+
     # Get total count
     total = query.count()
     
@@ -102,7 +107,10 @@ def search_agents(
         Agent.description.ilike(f"%{q}%")
     )
     
-    query = db.query(Agent).filter(search_filter)
+    query = db.query(Agent).options(
+        joinedload(Agent.category),
+        joinedload(Agent.tags)
+    ).filter(search_filter)
     total = query.count()
     
     # Apply sorting
@@ -130,38 +138,54 @@ def search_agents(
     )
 
 
-@router.get("/{agent_id}", response_model=ApiResponse[AgentResponse])
+@router.get("/{agent_id}", response_model=ApiResponse[AgentDetailResponse])
 def get_agent(
     agent_id: UUID,
     db: Session = Depends(get_db)
 ):
     """Get a specific agent by ID.
-    
-    Also increments the view count for the agent.
-    
+
+    Also increments the view count for the agent and returns
+    related agents from the same category.
+
     Args:
         agent_id: UUID of the agent to retrieve
-        
+
     Returns:
-        Agent details
-        
+        Agent details with related agents
+
     Raises:
         404: Agent not found
     """
-    agent = db.query(Agent).filter(Agent.id == agent_id).first()
-    
+    agent = db.query(Agent).options(
+        joinedload(Agent.category),
+        joinedload(Agent.tags)
+    ).filter(Agent.id == agent_id).first()
+
     if not agent:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Agent with id {agent_id} not found"
         )
-    
+
     # Increment view count
     agent.view_count += 1
     db.commit()
     db.refresh(agent)
-    
-    return ApiResponse(success=True, data=agent)
+
+    # Related agents from the same category (excluding current), most viewed first
+    related_agents = db.query(Agent).options(
+        joinedload(Agent.category),
+        joinedload(Agent.tags)
+    ).filter(
+        Agent.category_id == agent.category_id,
+        Agent.id != agent.id
+    ).order_by(Agent.view_count.desc()).limit(4).all()
+
+    detail = AgentDetailResponse.model_validate(agent)
+    detail.related_agents = [AgentSummary.model_validate(a) for a in related_agents]
+
+    return ApiResponse(success=True, data=detail)
 
 
 @router.post("", response_model=ApiResponse[AgentResponse], status_code=status.HTTP_201_CREATED)

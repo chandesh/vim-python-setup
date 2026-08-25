@@ -1,9 +1,30 @@
-from pydantic import Field, HttpUrl
+from pydantic import Field
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
 from app.schemas.base import BaseSchema, IDMixin, TimestampMixin
 from app.models.agent import PricingModel
+
+
+class TagSchema(BaseSchema):
+    """Minimal tag representation embedded in agent responses."""
+
+    id: UUID
+    name: str
+    slug: str
+
+
+class CategorySchema(BaseSchema):
+    """Category representation embedded in agent responses."""
+
+    id: UUID
+    name: str
+    slug: str
+    description: Optional[str] = None
+    icon_url: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
 
 
 class AgentBase(BaseSchema):
@@ -42,20 +63,37 @@ class AgentUpdate(BaseSchema):
 
 class AgentResponse(AgentBase, IDMixin, TimestampMixin):
     """Schema for agent response."""
-    
+
     featured: bool
     view_count: int
-    # category: Optional["CategoryResponse"] = None  # Can be added with forward ref
-    # tags: list["TagResponse"] = []  # Can be added with forward ref
+    category: Optional[CategorySchema] = None
+    tags: list[TagSchema] = []
 
 
 class AgentListResponse(BaseSchema):
     """Schema for paginated agent list response."""
-    
+
     agents: list[AgentResponse]
     total: int
     page: int
     limit: int
+
+
+class AgentSummary(BaseSchema, IDMixin, TimestampMixin):
+    """Compact agent card used in the related-agents section."""
+
+    name: str = Field(..., max_length=200)
+    slug: str = Field(..., max_length=200)
+    short_description: str = Field(..., max_length=160)
+    logo_url: Optional[str] = Field(None, max_length=500)
+    pricing_model: PricingModel
+    featured: bool
+
+
+class AgentDetailResponse(AgentResponse):
+    """Schema for the agent detail response, including related agents."""
+
+    related_agents: list[AgentSummary] = Field(default=[], description="Other agents in the same category")
 
 
 class AgentSearchParams(BaseSchema):

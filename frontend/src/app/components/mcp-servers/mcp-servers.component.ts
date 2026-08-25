@@ -3,14 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { FavoritesService } from '../../services/favorites.service';
 import { MCPServer, Category } from '../../models/agent.model';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
+import { FavoriteButtonComponent } from '../favorite-button/favorite-button.component';
 
 @Component({
   selector: 'app-mcp-servers',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, FooterComponent],
+  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, FooterComponent, FavoriteButtonComponent],
   templateUrl: './mcp-servers.component.html',
   styleUrls: ['./mcp-servers.component.css']
 })
@@ -37,12 +39,16 @@ export class McpServersComponent implements OnInit {
   // Sorting
   selectedSort = 'star_count_desc';
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private favoritesService: FavoritesService
+  ) {}
 
   ngOnInit(): void {
     this.loadCategories();
     this.loadLanguages();
     this.loadServers();
+    this.favoritesService.refreshFavoritesState();
   }
 
   loadCategories(): void {

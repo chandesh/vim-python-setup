@@ -1,0 +1,115 @@
+<div class="page-container">
+  <app-header></app-header>
+
+  <main class="page-content profile-page">
+    <!-- Profile Header -->
+    <section class="profile-header-card">
+      <div class="profile-accent"></div>
+      <div class="profile-body">
+        <div class="profile-avatar" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"/>
+          </svg>
+        </div>
+        <div class="profile-info">
+          <h1 class="profile-name">{{ user()?.username }}</h1>
+          <p class="profile-email">{{ user()?.email }}</p>
+          <p class="profile-meta">Member since {{ user() ? formatDate(user()!.created_at) : '' }}</p>
+        </div>
+        <div class="profile-stats">
+          <span class="stat-number">{{ totalFavorites() }}</span>
+          <span class="stat-label">{{ totalFavorites() === 1 ? 'Favorite' : 'Favorites' }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Favorites Section -->
+    <section class="favorites-section">
+      <div class="favorites-heading-row">
+        <h2 class="favorites-title">
+          My Favorites
+        </h2>
+        <button (click)="loadFavorites()" class="refresh-button" [disabled]="loading()">
+          Refresh
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading()" class="state-container">
+        <div class="spinner"></div>
+        <p class="state-text">Loading favorites...</p>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="error() && !loading()" class="alert-error rounded-lg p-4 mb-6">
+        <p class="error-text">{{ error() }}</p>
+        <button (click)="loadFavorites()" class="retry-button">Try Again</button>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="!loading() && !error() && favorites().length === 0" class="empty-state">
+        <div class="empty-icon">☆</div>
+        <h3 class="empty-title">No favorites yet</h3>
+        <p class="state-text">Browse agents and MCP servers, then tap the heart icon to save them here.</p>
+        <div class="empty-actions">
+          <a routerLink="/agents" class="browse-link">Explore AI Agents</a>
+          <a routerLink="/mcp-servers" class="browse-link browse-link-secondary">Explore MCP Servers</a>
+        </div>
+      </div>
+
+      <!-- Favorites grid -->
+      <div *ngIf="!loading() && favorites().length > 0" class="favorites-grid">
+        <div *ngFor="let item of favorites()" class="favorite-card">
+          <a [routerLink]="getItemRoute(item)" class="favorite-card-link">
+            <div class="favorite-card-top">
+              <span class="item-type-badge" [class.item-type-agent]="item.agent" [class.item-type-server]="!item.agent">
+                {{ getItemTypeLabel(item) }}
+              </span>
+              <button
+                class="remove-favorite-button"
+                type="button"
+                aria-label="Remove from favorites"
+                title="Remove from favorites"
+                (click)="removeFavorite(item); $event.preventDefault(); $event.stopPropagation()"
+              >
+                ♥
+              </button>
+            </div>
+
+            <div class="favorite-card-body">
+              <img
+                *ngIf="(item.agent?.logo_url || item.mcp_server?.logo_url) as logoUrl"
+                [src]="logoUrl"
+                [alt]="getItemName(item) + ' logo'"
+                (error)="$any($event.target).style.display = 'none'"
+                class="favorite-logo"
+              />
+              <h3 class="favorite-name">{{ getItemName(item) }}</h3>
+
+              <p class="favorite-description line-clamp-2">
+                {{ item.agent?.short_description || item.mcp_server?.description }}
+              </p>
+
+              <div class="favorite-badges">
+                <span
+                  *ngIf="item.agent"
+                  [class]="getPricingBadgeClass(item.agent.pricing_model)"
+                >
+                  {{ item.agent.pricing_model | titlecase }}
+                </span>
+                <span *ngIf="item.mcp_server" class="language-badge">
+                  {{ item.mcp_server.language }}
+                </span>
+                <span *ngIf="item.mcp_server" class="stars-badge-sm">
+                  ★ {{ item.mcp_server.star_count }}
+                </span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <app-footer></app-footer>
+</div>

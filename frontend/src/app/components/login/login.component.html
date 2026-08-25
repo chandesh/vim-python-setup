@@ -1,0 +1,72 @@
+<div class="page-container">
+  <app-header></app-header>
+
+  <main class="page-content auth-page">
+    <div class="auth-card">
+      <div class="auth-accent"></div>
+      <div class="auth-body">
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Sign in to manage your favorites and personalize your experience.</p>
+
+        <!-- Session expired notice -->
+        <div *ngIf="sessionExpired()" class="alert alert-warning">
+          Your session has expired. Please sign in again.
+        </div>
+
+        <!-- Error message -->
+        <div *ngIf="errorMessage()" class="alert alert-error" role="alert">
+          {{ errorMessage() }}
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="you@example.com"
+              class="form-input"
+              [class.input-invalid]="email.invalid && email.touched"
+              autocomplete="email"
+            />
+            <span *ngIf="email.invalid && email.touched" class="field-error">
+              <ng-container *ngIf="email.errors?.['required']">Email is required.</ng-container>
+              <ng-container *ngIf="email.errors?.['email']">Please enter a valid email address.</ng-container>
+            </span>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              placeholder="Your password"
+              class="form-input"
+              [class.input-invalid]="password.invalid && password.touched"
+              autocomplete="current-password"
+            />
+            <span *ngIf="password.invalid && password.touched" class="field-error">
+              Password is required.
+            </span>
+          </div>
+
+          <button type="submit" class="submit-button" [disabled]="loading()">
+            <span *ngIf="loading()" class="button-spinner"></span>
+            {{ loading() ? 'Signing in...' : 'Sign In' }}
+          </button>
+        </form>
+
+        <p class="auth-switch">
+          Don't have an account?
+          <a routerLink="/register" class="auth-switch-link">Create one</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>

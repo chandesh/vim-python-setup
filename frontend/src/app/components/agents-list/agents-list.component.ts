@@ -3,14 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { FavoritesService } from '../../services/favorites.service';
+import { AuthService } from '../../services/auth.service';
 import { Agent, Category } from '../../models/agent.model';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
+import { FavoriteButtonComponent } from '../favorite-button/favorite-button.component';
 
 @Component({
   selector: 'app-agents-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, FooterComponent],
+  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, FooterComponent, FavoriteButtonComponent],
   templateUrl: './agents-list.component.html',
   styleUrls: ['./agents-list.component.css']
 })
@@ -19,27 +22,32 @@ export class AgentsListComponent implements OnInit {
   categories: Category[] = [];
   loading = false;
   error: string | null = null;
-  
+
   // Pagination
   currentPage = 1;
   totalPages = 1;
   totalAgents = 0;
   limit = 12;
-  
+
   // Filters
   searchQuery = '';
   selectedCategory = '';
   selectedPricing = '';
   showFeaturedOnly = false;
-  
+
   // Sorting
   selectedSort = 'created_at_desc';
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private favoritesService: FavoritesService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadCategories();
     this.loadAgents();
+    this.favoritesService.refreshFavoritesState();
   }
 
   loadCategories(): void {

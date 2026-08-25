@@ -29,6 +29,22 @@ export interface AgentListResponse {
   limit: number;
 }
 
+export interface AgentSummary {
+  id: string;
+  name: string;
+  slug: string;
+  short_description: string;
+  logo_url: string | null;
+  pricing_model: 'free' | 'freemium' | 'paid';
+  featured: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AgentDetail extends Agent {
+  related_agents: AgentSummary[];
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
@@ -67,8 +83,27 @@ export interface MCPServer {
 }
 
 export interface MCPServerListResponse {
-  mcp_servers: MCPServer[];
+  servers: MCPServer[];
   total: number;
   page: number;
   limit: number;
+  total_pages?: number;
+}
+
+export interface MCPServerSummary {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  language: string;
+  logo_url: string | null;
+  star_count: number;
+  scope: 'local' | 'cloud' | 'hybrid';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MCPServerDetail {
+  server: MCPServer;
+  related_servers: MCPServerSummary[];
 }

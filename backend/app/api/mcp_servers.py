@@ -136,24 +136,41 @@ async def get_mcp_server(
     server_id: UUID,
     db: Session = Depends(get_db)
 ):
-    """Get a single MCP server by ID."""
+    """Get a single MCP server by ID.
+
+    Also increments the view count and returns related servers
+    sharing the same category or language.
+    """
     try:
         server = db.query(MCPServer).options(
             joinedload(MCPServer.category),
             joinedload(MCPServer.tags)
         ).filter(MCPServer.id == server_id).first()
-        
+
         if not server:
             raise HTTPException(status_code=404, detail="MCP Server not found")
-        
+
         # Increment view count
         server.view_count += 1
         db.commit()
-        
+
+        # Related servers from the same category or language, most starred first
+        related_servers = db.query(MCPServer).options(
+            joinedload(MCPServer.category),
+            joinedload(MCPServer.tags)
+        ).filter(
+            MCPServer.id != server.id,
+            or_(
+                MCPServer.category_id == server.category_id,
+                func.lower(MCPServer.language) == func.lower(server.language)
+            )
+        ).order_by(MCPServer.star_count.desc()).limit(4).all()
+
         return {
             "success": True,
             "data": {
-                "server": server
+                "server": server,
+                "related_servers": related_servers
             }
         }
     except HTTPException:

@@ -1,0 +1,187 @@
+<div class="page-container">
+  <app-header></app-header>
+
+  <main class="page-content">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="state-container">
+      <div class="spinner"></div>
+      <p class="state-text">Loading server...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="alert-error rounded-lg p-4 mb-6">
+      <p class="error-text">{{ error }}</p>
+      <button (click)="goBack()" class="btn-secondary">Back to Servers</button>
+    </div>
+
+    <!-- Not Found State -->
+    <div *ngIf="notFound && !loading" class="state-container not-found-card">
+      <div class="not-found-icon">🔌</div>
+      <h2 class="not-found-title">Server Not Found</h2>
+      <p class="state-text">The MCP server you're looking for doesn't exist or may have been removed.</p>
+      <button (click)="goBack()" class="btn-primary">Browse All Servers</button>
+    </div>
+
+    <!-- Detail Content -->
+    <div *ngIf="server && !loading && !error" class="detail-wrapper">
+      <!-- Breadcrumb / Back -->
+      <nav class="breadcrumb">
+        <a routerLink="/mcp-servers" class="breadcrumb-link">MCP Servers</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">{{ server.name }}</span>
+      </nav>
+
+      <!-- Hero Card -->
+      <section class="hero-card">
+        <div class="hero-accent"></div>
+        <div class="hero-body">
+          <div class="hero-header">
+            <!-- Logo -->
+            <div class="hero-logo">
+              <ng-container *ngIf="server.logo_url; else fallbackLogo">
+                <img
+                  [src]="server.logo_url"
+                  [alt]="server.name + ' logo'"
+                  (error)="server.logo_url = null"
+                  class="logo-image"
+                />
+              </ng-container>
+              <ng-template #fallbackLogo>
+                <div class="logo-fallback">
+                  <svg width="32" height="32" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M1.75 2.5a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75zM1.75 7.25a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75zM1.75 12a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75z"/>
+                  </svg>
+                </div>
+              </ng-template>
+            </div>
+
+            <div class="hero-title-block">
+              <h1 class="hero-title">{{ server.name }}</h1>
+              <div class="hero-subtitle">
+                <span *ngIf="server.category" class="hero-category">{{ server.category.name }}</span>
+                <span class="hero-language">{{ server.language }}</span>
+              </div>
+            </div>
+
+            <span class="stars-badge">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
+              </svg>
+              {{ formatStars(server.star_count) }}
+            </span>
+          </div>
+
+          <p class="hero-short-description">{{ server.description }}</p>
+
+          <div class="hero-meta">
+            <span [class]="getScopeBadgeClass(server.scope)">
+              {{ server.scope | titlecase }}
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 3.5a.5.5 0 00-1 0V9a.5.5 0 00.252.434l3.5 2a.5.5 0 00.496-.868L8 8.71V3.5z"/>
+                <path d="M8 16A8 8 0 108 0a8 8 0 000 16zm7-8A7 7 0 111 8a7 7 0 0114 0z"/>
+              </svg>
+              {{ formatDate(server.created_at) }}
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M10.5 8a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"/>
+              </svg>
+              {{ server.view_count }} views
+            </span>
+          </div>
+
+          <!-- Package info -->
+          <div *ngIf="server.npm_package || server.pypi_package" class="packages-row">
+            <div *ngIf="server.npm_package" class="package-chip">
+              <span class="package-label">npm</span>
+              <code>{{ server.npm_package }}</code>
+            </div>
+            <div *ngIf="server.pypi_package" class="package-chip">
+              <span class="package-label">PyPI</span>
+              <code>{{ server.pypi_package }}</code>
+            </div>
+          </div>
+
+          <div class="cta-row">
+            <app-favorite-button [itemId]="server.id" variant="button"></app-favorite-button>
+            <a
+              [href]="server.repository_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="cta-button"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0016 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+              View on GitHub
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Description & Tags -->
+      <section class="content-card">
+        <h2 class="section-title">About {{ server.name }}</h2>
+        <p class="full-description">{{ server.description }}</p>
+
+        <div *ngIf="server.tags && server.tags.length > 0" class="tags-section">
+          <h3 class="subsection-title">Tags</h3>
+          <div class="card-tags">
+            <span *ngFor="let tag of server.tags" class="tag">{{ tag.name }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Related Servers -->
+      <section *ngIf="relatedServers.length > 0" class="related-section">
+        <h2 class="section-title">Related Servers</h2>
+        <div class="related-grid">
+          <a
+            *ngFor="let related of relatedServers"
+            [routerLink]="['/mcp-servers', related.id]"
+            class="related-card"
+          >
+            <div class="related-card-header">
+              <div class="related-logo">
+                <ng-container *ngIf="related.logo_url; else relatedFallback">
+                  <img
+                    [src]="related.logo_url"
+                    [alt]="related.name + ' logo'"
+                    (error)="related.logo_url = null"
+                    class="logo-image logo-image-sm"
+                  />
+                </ng-container>
+                <ng-template #relatedFallback>
+                  <div class="logo-fallback logo-fallback-sm">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                      <path d="M1.75 2.5a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75zM1.75 7.25a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75zM1.75 12a.75.75 0 000 1.5h12.5a.75.75 0 000-1.5H1.75z"/>
+                    </svg>
+                  </div>
+                </ng-template>
+              </div>
+              <div class="related-title-block">
+                <h3 class="related-name">{{ related.name }}</h3>
+                <span class="related-stars">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
+                  </svg>
+                  {{ formatStars(related.star_count) }}
+                </span>
+              </div>
+            </div>
+            <p class="related-description">{{ related.description }}</p>
+            <div class="related-footer">
+              <span class="related-language">{{ related.language }}</span>
+              <span class="view-details">View details →</span>
+            </div>
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>

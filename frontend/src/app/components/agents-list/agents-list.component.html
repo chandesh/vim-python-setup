@@ -201,13 +201,18 @@
             </div>
             
             <div class="flex-1">
-              <h3 class="card-title">{{ agent.name }}</h3>
+              <h3 class="card-title">
+                <a [routerLink]="['/agents', agent.id]" class="card-title-link">{{ agent.name }}</a>
+              </h3>
               <p *ngIf="agent.category" class="card-category">{{ agent.category.name }}</p>
             </div>
-            
-            <span *ngIf="agent.featured" class="featured-badge">
-              Featured
-            </span>
+
+            <div class="card-header-actions">
+              <span *ngIf="agent.featured" class="featured-badge">
+                Featured
+              </span>
+              <app-favorite-button [itemId]="agent.id" variant="icon"></app-favorite-button>
+            </div>
           </div>
         </div>
 
@@ -232,14 +237,22 @@
           <span [class]="getPricingBadgeClass(agent.pricing_model)">
             {{ agent.pricing_model | titlecase }}
           </span>
-          <a
-            [href]="agent.website_url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="visit-link"
-          >
-            Visit Site →
-          </a>
+          <div class="footer-links">
+            <a
+              [routerLink]="['/agents', agent.id]"
+              class="details-link"
+            >
+              Details →
+            </a>
+            <a
+              [href]="agent.website_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="visit-link"
+            >
+              Visit Site →
+            </a>
+          </div>
         </div>
       </div>
     </div>

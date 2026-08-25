@@ -2,11 +2,13 @@ import { Component, ElementRef, HostListener, inject, signal } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
+import { ToastsComponent } from '../toast/toast.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, ThemePickerComponent],
+  imports: [CommonModule, RouterModule, ThemePickerComponent, ToastsComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
@@ -15,6 +17,12 @@ export class HeaderComponent {
   isMobileMenuOpen = false;
 
   private readonly elementRef = inject(ElementRef);
+  readonly authService = inject(AuthService);
+
+  constructor() {
+    // Restore any persisted session (token in localStorage) on first load
+    this.authService.ensureInitialized();
+  }
 
   // Mobile navigation
   toggleMenu(): void {
@@ -41,7 +49,7 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    // Placeholder until authentication is implemented
+    this.authService.logout();
     this.closeProfileMenu();
   }
 

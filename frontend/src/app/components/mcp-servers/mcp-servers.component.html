@@ -228,13 +228,18 @@
             </div>
             
             <div class="flex-1">
-              <h3 class="card-title">{{ server.name }}</h3>
+              <h3 class="card-title">
+                <a [routerLink]="['/mcp-servers', server.id]" class="card-title-link">{{ server.name }}</a>
+              </h3>
               <p *ngIf="server.category" class="card-category">{{ server.category.name }}</p>
             </div>
-            
-            <span *ngIf="server.featured" class="featured-badge">
-              Featured
-            </span>
+
+            <div class="card-header-actions">
+              <span *ngIf="server.featured" class="featured-badge">
+                Featured
+              </span>
+              <app-favorite-button [itemId]="server.id" variant="icon"></app-favorite-button>
+            </div>
           </div>
         </div>
 
@@ -283,14 +288,22 @@
               {{ server.view_count }}
             </span>
           </div>
-          <a
-            [href]="server.repository_url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="visit-link"
-          >
-            View Repo →
-          </a>
+          <div class="footer-links">
+            <a
+              [routerLink]="['/mcp-servers', server.id]"
+              class="details-link"
+            >
+              Details →
+            </a>
+            <a
+              [href]="server.repository_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="visit-link"
+            >
+              View Repo →
+            </a>
+          </div>
         </div>
       </div>
     </div>

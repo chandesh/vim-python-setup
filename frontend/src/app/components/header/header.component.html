@@ -66,26 +66,40 @@
                 </svg>
               </span>
               <div class="dropdown-user-info">
-                <span class="dropdown-user-name">Guest User</span>
-                <span class="dropdown-user-email">Sign in to personalize</span>
+                @if (authService.user(); as user) {
+                  <span class="dropdown-user-name">{{ user.username }}</span>
+                  <span class="dropdown-user-email">{{ user.email }}</span>
+                } @else {
+                  <span class="dropdown-user-name">Guest User</span>
+                  <span class="dropdown-user-email">Sign in to personalize</span>
+                }
               </div>
             </div>
 
             <div class="dropdown-divider"></div>
 
-            <!-- Account links -->
-            <a href="#" class="dropdown-item" role="menuitem" (click)="$event.preventDefault(); closeProfileMenu()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z"/>
-              </svg>
-              Profile Overview
-            </a>
-            <a href="#" class="dropdown-item" role="menuitem" (click)="$event.preventDefault(); closeProfileMenu()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M19.14 12.94a7.07 7.07 0 000-1.88l2.03-1.58a.5.5 0 00.12-.64l-1.92-3.32a.5.5 0 00-.61-.22l-2.39.96a7.03 7.03 0 00-1.63-.94l-.36-2.54a.5.5 0 00-.5-.43h-3.84a.5.5 0 00-.5.43l-.36 2.54c-.59.24-1.13.56-1.63.94l-2.39-.96a.5.5 0 00-.61.22L2.63 8.84a.5.5 0 00.12.64l2.03 1.58a7.07 7.07 0 000 1.88l-2.03 1.58a.5.5 0 00-.12.64l1.92 3.32c.13.23.4.32.61.22l2.39-.96c.5.38 1.04.7 1.63.94l.36 2.54c.04.25.25.43.5.43h3.84c.25 0 .46-.18.5-.43l.36-2.54c.59-.24 1.13-.56 1.63-.94l2.39.96c.21.1.48.01.61-.22l1.92-3.32a.5.5 0 00-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z"/>
-              </svg>
-              Account Settings
-            </a>
+            <!-- Account links (signed in) -->
+            @if (authService.isAuthenticated()) {
+              <a routerLink="/profile" class="dropdown-item" role="menuitem" (click)="closeProfileMenu()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z"/>
+                </svg>
+                My Profile &amp; Favorites
+              </a>
+            } @else {
+              <a routerLink="/login" class="dropdown-item" role="menuitem" (click)="closeProfileMenu()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M11 7L9.6 8.4l2.6 2.6H3v2h9.2l-2.6 2.6L11 17l5-5-5-5zm9 5c0-1.1-.9-2-2-2h-3v2h3v6h-6v-1.8h-2V19c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-7z"/>
+                </svg>
+                Sign In
+              </a>
+              <a routerLink="/register" class="dropdown-item" role="menuitem" (click)="closeProfileMenu()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M15 12a4 4 0 10-8 0 4 4 0 008 0zm-4-2.5a2.5 2.5 0 110 5 2.5 2.5 0 010-5zM19 22h-14a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2zM12 13.5c-2.67 0-8 1.33-8 4V19h16v-1.5c0-2.67-5.33-4-8-4z"/>
+                </svg>
+                Create Account
+              </a>
+            }
 
             <div class="dropdown-divider"></div>
 
@@ -93,15 +107,17 @@
             <p class="dropdown-section-label" id="theme-settings-label">Theme Settings</p>
             <app-theme-picker aria-labelledby="theme-settings-label"></app-theme-picker>
 
-            <div class="dropdown-divider"></div>
+            @if (authService.isAuthenticated()) {
+              <div class="dropdown-divider"></div>
 
-            <!-- Log Out -->
-            <button type="button" class="dropdown-item logout-item" role="menuitem" (click)="logout()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M17 8l-1.41 1.41L17.17 11H9v2h8.17l-1.58 1.59L17 16l4-4-4-4zM5 5h6V3H5a2 2 0 00-2 2v14a2 2 0 002 2h6v-2H5V5z"/>
-              </svg>
-              Log Out
-            </button>
+              <!-- Log Out -->
+              <button type="button" class="dropdown-item logout-item" role="menuitem" (click)="logout()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M17 8l-1.41 1.41L17.17 11H9v2h8.17l-1.58 1.59L17 16l4-4-4-4zM5 5h6V3H5a2 2 0 00-2 2v14a2 2 0 002 2h6v-2H5V5z"/>
+                </svg>
+                Log Out
+              </button>
+            }
           </div>
         }
       </div>
@@ -139,4 +155,7 @@
       MCP Servers
     </a>
   </nav>
+
+  <!-- Global toast notifications -->
+  <app-toasts></app-toasts>
 </header>
