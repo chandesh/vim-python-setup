@@ -6,7 +6,7 @@ Execute these commands sequentially to set up the entire project structure, back
 
 ```bash
 # Navigate to playground directory
-cd /Users/chandesh/work/code/playground
+cd path/to/your/workspace
 
 # Create project directory
 mkdir -p ai-agent-hub
@@ -644,7 +644,7 @@ find . -type d -not -path '*/\.*' -not -path '*/node_modules*' -not -path '*/.ve
 ## Step 7: Initialize Git and Create Initial Commit
 
 ```bash
-cd /Users/chandesh/work/code/playground/ai-agent-hub
+cd path/to/your/workspace/ai-agent-hub
 
 git add .
 git commit -m "feat: Initialize project structure with FastAPI backend, Angular frontend, and documentation"

@@ -2,7 +2,7 @@
 
 ## 📦 Deliverables Summary
 
-All files have been created in `/Users/chandesh/work/code/playground/` ready for you to execute.
+All files have been created in `<workspace>/` ready for you to execute.
 
 ### Documentation Files
 
@@ -42,7 +42,7 @@ All files have been created in `/Users/chandesh/work/code/playground/` ready for
 ### Project Structure Created
 
 ```
-/Users/chandesh/work/code/playground/
+<workspace>/
 ├── ai-agent-hub/                      # Main project directory
 │   ├── docs/
 │   │   └── requirements.md            # 📋 Full specifications
@@ -63,7 +63,7 @@ All files have been created in `/Users/chandesh/work/code/playground/` ready for
 ### Option 1: Follow Step-by-Step (Recommended for first-time)
 
 ```bash
-cd /Users/chandesh/work/code/playground
+cd path/to/your/workspace
 cat SETUP_COMMANDS.md
 # Read through and execute each section one by one
 ```
@@ -303,7 +303,7 @@ Project scaffold is complete when:
 
 **Next Action**:
 ```bash
-cd /Users/chandesh/work/code/playground
+cd path/to/your/workspace
 cat SETUP_COMMANDS.md | less
 # Start with Step 1
 ```

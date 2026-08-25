@@ -14,8 +14,7 @@ Save this as `setup.sh` and run `bash setup.sh`:
 #!/bin/bash
 set -e
 
-PROJECT_DIR="/Users/chandesh/work/code/playground/ai-agent-hub"
-cd /Users/chandesh/work/code/playground
+# Run this script from the directory where you want the project created
 
 # Step 1: Create and initialize project
 mkdir -p ai-agent-hub

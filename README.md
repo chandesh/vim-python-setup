@@ -2,7 +2,7 @@
 
 **Status**: ✅ Ready for Development  
 **Created**: 2025-11-23  
-**Location**: `/Users/chandesh/work/code/playground/ai-agent-hub/`
+**Location**: `<workspace>/ai-agent-hub/`
 
 ## 📚 Documentation Index
 
@@ -127,7 +127,7 @@ git --version          # Git
 
 ### Step 3: Execute Setup Commands (30-45 min)
 ```bash
-cd /Users/chandesh/work/code/playground
+cd path/to/your/workspace
 cat SETUP_COMMANDS.md  # Read instructions
 # Execute each step
 ```
@@ -320,7 +320,7 @@ Setup is complete when:
 
 ### Next Action:
 ```bash
-cd /Users/chandesh/work/code/playground
+cd path/to/your/workspace
 cat DELIVERABLES.md        # 5 minutes
 cat SETUP_COMMANDS.md      # Read & Execute (30-45 min)
 ```
