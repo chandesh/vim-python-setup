@@ -26,11 +26,14 @@ def list_agents(
     category_id: Optional[UUID] = Query(None, description="Filter by category"),
     pricing_model: Optional[str] = Query(None, description="Filter by pricing model"),
     featured: Optional[bool] = Query(None, description="Filter featured agents"),
+    sort_by: Optional[str] = Query("created_at", description="Sort by field (name, created_at, view_count)"),
+    sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
     db: Session = Depends(get_db)
 ):
-    """List all agents with pagination and filtering.
+    """List all agents with pagination, filtering, and sorting.
     
     Supports filtering by category, pricing model, and featured status.
+    Supports sorting by name, created_at, or view_count.
     """
     query = db.query(Agent)
     
@@ -45,9 +48,17 @@ def list_agents(
     # Get total count
     total = query.count()
     
+    # Apply sorting
+    sort_fields = {
+        "name": Agent.name,
+        "created_at": Agent.created_at,
+        "view_count": Agent.view_count
+    }
+    sort_field = sort_fields.get(sort_by, Agent.created_at)
+    query = query.order_by(sort_field.desc() if sort_order == "desc" else sort_field.asc())
+    
     # Get paginated results
     agents = query\
-        .order_by(Agent.featured.desc(), Agent.created_at.desc())\
         .offset((page - 1) * limit)\
         .limit(limit)\
         .all()
@@ -68,6 +79,8 @@ def search_agents(
     q: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    sort_by: Optional[str] = Query("view_count", description="Sort by field (name, created_at, view_count)"),
+    sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
     db: Session = Depends(get_db)
 ):
     """Search agents by name or description.
@@ -76,6 +89,8 @@ def search_agents(
         q: Search query string
         page: Page number
         limit: Items per page
+        sort_by: Field to sort by
+        sort_order: Sort order (asc/desc)
         
     Returns:
         Paginated list of matching agents
@@ -90,8 +105,16 @@ def search_agents(
     query = db.query(Agent).filter(search_filter)
     total = query.count()
     
+    # Apply sorting
+    sort_fields = {
+        "name": Agent.name,
+        "created_at": Agent.created_at,
+        "view_count": Agent.view_count
+    }
+    sort_field = sort_fields.get(sort_by, Agent.view_count)
+    query = query.order_by(sort_field.desc() if sort_order == "desc" else sort_field.asc())
+    
     agents = query\
-        .order_by(Agent.featured.desc(), Agent.view_count.desc())\
         .offset((page - 1) * limit)\
         .limit(limit)\
         .all()

@@ -1,4 +1,4 @@
-.PHONY: help init build up down start stop restart logs clean rebuild db-only backend-only frontend-only ps shell-backend shell-db test
+.PHONY: help init build up down start stop restart logs clean rebuild db-only backend-only frontend-only ps shell-backend shell-db test npm-install npm-dev frontend-dev
 
 # Default target
 help:
@@ -8,6 +8,11 @@ help:
 	@echo "Initial Setup:"
 	@echo "  make init            - Initialize project (first time setup)"
 	@echo "  make frontend-setup  - Setup frontend with nvm and dependencies"
+	@echo ""
+	@echo "Frontend Development:"
+	@echo "  make frontend-dev    - Start frontend dev server (Docker)"
+	@echo "  make npm-install     - Install npm packages in frontend (local)"
+	@echo "  make npm-dev         - Install dev dependencies in frontend (local)"
 	@echo ""
 	@echo "Starting & Stopping:"
 	@echo "  make up              - Start all services (detached)"
@@ -41,6 +46,7 @@ help:
 	@echo "  make db-migrate      - Run database migrations"
 	@echo "  make db-create       - Create new migration"
 	@echo "  make db-seed         - Seed database with sample data"
+	@echo "  make populate-mcp    - Populate MCP servers data"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test            - Run backend tests"
@@ -193,6 +199,10 @@ db-seed:
 	@echo "Seeding database with sample data..."
 	docker exec -it ai_agent_hub_backend python -m app.scripts.seed_data
 
+populate-mcp:
+	@echo "Populating MCP servers data..."
+	docker exec ai_agent_hub_backend python app/scripts/populate_mcp_servers.py
+
 # Testing
 test:
 	@echo "Running tests..."
@@ -222,6 +232,19 @@ clean-all:
 frontend-setup:
 	@echo "Setting up frontend with nvm..."
 	@bash scripts/frontend-setup.sh
+
+# Frontend npm commands
+npm-install:
+	@echo "Installing npm packages..."
+	@cd frontend && source ~/.nvm/nvm.sh && nvm use && npm install
+
+npm-dev:
+	@echo "Installing dev dependencies..."
+	@cd frontend && source ~/.nvm/nvm.sh && nvm use && npm install --save-dev $(PKG)
+
+frontend-dev:
+	@echo "Starting frontend development server in Docker..."
+	docker-compose up frontend
 
 # Health check
 health:

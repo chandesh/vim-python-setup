@@ -42,20 +42,23 @@ services:
     networks:
       - app-network
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile.dev
-  #   container_name: ai_agent_hub_frontend
-  #   ports:
-  #     - "4200:4200"
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules
-  #   environment:
-  #     ANGULAR_CLI_CACHE: /tmp/.ng
-  #   networks:
-  #     - app-network
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: ai_agent_hub_frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      ANGULAR_CLI_CACHE: /tmp/.ng
+      NODE_ENV: development
+    networks:
+      - app-network
+    stdin_open: true
+    tty: true
 
 volumes:
   postgres_data:

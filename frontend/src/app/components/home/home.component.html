@@ -1,0 +1,99 @@
+<div class="page-container">
+  <app-header></app-header>
+
+  <main class="home-content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-background"></div>
+      <div class="hero-container">
+        <div class="hero-badge">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
+          </svg>
+          Discover the Best AI Tools & Services
+        </div>
+        
+        <h1 class="hero-title">
+          Your Gateway to the
+          <span class="hero-gradient">AI Agent</span>
+          Ecosystem
+        </h1>
+        
+        <p class="hero-description">
+          Explore, compare, and discover AI agents and MCP servers. 
+          Find the perfect tools to enhance your workflow and unlock the power of artificial intelligence.
+        </p>
+        
+        <div class="hero-actions">
+          <a routerLink="/agents" class="btn-hero-primary">
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M11.742 10.344a6.5 6.5 0 10-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 001.415-1.414l-3.85-3.85a1.007 1.007 0 00-.115-.1zM12 6.5a5.5 5.5 0 11-11 0 5.5 5.5 0 0111 0z"/>
+            </svg>
+            Explore AI Agents
+          </a>
+          <a routerLink="/mcp-servers" class="btn-hero-secondary">
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M0 1.5A.5.5 0 01.5 1H2a.5.5 0 01.485.379L2.89 3H14.5a.5.5 0 01.491.592l-1.5 8A.5.5 0 0113 12H4a.5.5 0 01-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 01-.5-.5z"/>
+            </svg>
+            Browse MCP Servers
+          </a>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+          <div *ngFor="let stat of stats" class="stat-item">
+            <div class="stat-value">{{ stat.value }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="section-header">
+        <h2 class="section-title">Why Choose AI Agent Hub?</h2>
+        <p class="section-description">
+          Everything you need to discover, compare, and integrate AI agents into your workflow
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div *ngFor="let feature of features" class="feature-card">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 16 16" fill="currentColor">
+              <path [attr.d]="feature.icon"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="cta-container">
+        <div class="cta-content">
+          <h2 class="cta-title">Ready to Get Started?</h2>
+          <p class="cta-description">
+            Join thousands of developers and businesses discovering the perfect AI solutions for their needs.
+          </p>
+        </div>
+        <div class="cta-actions">
+          <a routerLink="/agents" class="cta-button-primary">
+            Start Exploring
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+              <path fill-rule="evenodd" d="M1 8a.5.5 0 01.5-.5h11.793l-3.147-3.146a.5.5 0 01.708-.708l4 4a.5.5 0 010 .708l-4 4a.5.5 0 01-.708-.708L13.293 8.5H1.5A.5.5 0 011 8z"/>
+            </svg>
+          </a>
+          <a href="#" class="cta-button-secondary">
+            Submit Your Agent
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <app-footer></app-footer>
+</div>
