@@ -129,7 +129,9 @@ source .venv/bin/activate
 uvicorn app.main:app --reload --port 8000
 
 # Terminal 2: Database (if using local PostgreSQL)
-postgres -D /usr/local/var/postgres
+# macOS (Homebrew): postgres -D /usr/local/var/postgres
+# Linux: pg_ctl -D /var/lib/postgresql/data start
+# Or use Docker: docker-compose up -d db
 
 # Terminal 3: Frontend
 cd frontend
@@ -139,7 +141,7 @@ ng serve --port 4200
 ### Option 2: Docker Development
 
 ```bash
-# Start all services
+# Start all services (or use `docker compose up` with Docker Compose v2)
 docker-compose up
 
 # Services available at:

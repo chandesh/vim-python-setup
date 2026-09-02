@@ -19,35 +19,36 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Check if nvm is available after loading
-if ! type nvm &> /dev/null; then
-    echo "[ERROR] nvm is not installed."
-    echo "Please install nvm from: https://github.com/nvm-sh/nvm"
-    echo ""
-    echo "Installation command:"
-    echo "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash"
-    exit 1
-fi
+if type nvm &> /dev/null; then
+    echo "[1/5] Using nvm to set Node.js version..."
 
-echo "[1/5] Using nvm to set Node.js version..."
+    # Check if .nvmrc exists
+    if [ ! -f .nvmrc ]; then
+        echo "[WARN] .nvmrc file not found! Using Node 20.19.5 as default"
+        echo "20.19.5" > .nvmrc
+    fi
 
-# Check if .nvmrc exists
-if [ ! -f .nvmrc ]; then
-    echo "[WARN] .nvmrc file not found! Using Node 20.19.5 as default"
-    echo "20.19.5" > .nvmrc
-fi
+    # Install and use the Node version from .nvmrc
+    NODE_VERSION=$(cat .nvmrc)
+    echo "Required Node.js version: $NODE_VERSION"
 
-# Install and use the Node version from .nvmrc
-NODE_VERSION=$(cat .nvmrc)
-echo "Required Node.js version: $NODE_VERSION"
+    if ! nvm list | grep -q "$NODE_VERSION"; then
+        echo "Installing Node.js $NODE_VERSION..."
+        nvm install "$NODE_VERSION"
+    else
+        echo "Node.js $NODE_VERSION is already installed"
+    fi
 
-if ! nvm list | grep -q "$NODE_VERSION"; then
-    echo "Installing Node.js $NODE_VERSION..."
-    nvm install "$NODE_VERSION"
+    nvm use "$NODE_VERSION"
 else
-    echo "Node.js $NODE_VERSION is already installed"
+    echo "[1/5] nvm not found, using system Node.js..."
+    if ! command -v node >/dev/null 2>&1; then
+        echo "[ERROR] Node.js is not installed."
+        echo "Please install Node.js 20+ from: https://nodejs.org/"
+        exit 1
+    fi
+    echo "[WARN] Skipping nvm - using system Node.js $(node --version)"
 fi
-
-nvm use "$NODE_VERSION"
 
 echo ""
 echo "[2/5] Verifying Node.js and npm versions..."

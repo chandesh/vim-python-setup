@@ -1,5 +1,8 @@
 .PHONY: help init build up down start stop restart logs clean rebuild db-only backend-only frontend-only ps shell-backend shell-db test npm-install npm-dev frontend-dev
 
+# Auto-detect docker compose command (supports both v1 standalone and v2 plugin)
+DOCKER_COMPOSE := $(shell command -v docker-compose 2>/dev/null && echo "docker-compose" || echo "docker compose")
+
 # Default target
 help:
 	@echo "AI Agent Hub - Available Commands"
@@ -66,7 +69,7 @@ init:
 	@echo ""
 	@echo "Step 1: Checking prerequisites..."
 	@command -v docker >/dev/null 2>&1 || { echo "[ERROR] Docker is required but not installed. Aborting."; exit 1; }
-	@command -v docker-compose >/dev/null 2>&1 || { echo "[ERROR] Docker Compose is required but not installed. Aborting."; exit 1; }
+	@$(DOCKER_COMPOSE) version >/dev/null 2>&1 || { echo "[ERROR] Docker Compose is required but not installed. Aborting."; exit 1; }
 	@echo "[OK] Docker and Docker Compose are installed"
 	@echo ""
 	@echo "Step 2: Creating .env file for backend..."
@@ -78,11 +81,11 @@ init:
 	fi
 	@echo ""
 	@echo "Step 3: Building Docker images..."
-	@docker-compose build
+	@$(DOCKER_COMPOSE) build
 	@echo "[OK] Docker images built successfully"
 	@echo ""
 	@echo "Step 4: Starting services..."
-	@docker-compose up -d
+	@$(DOCKER_COMPOSE) up -d
 	@echo "[OK] Services started"
 	@echo ""
 	@echo "Step 5: Waiting for database to be ready..."
@@ -107,16 +110,16 @@ init:
 # Build
 build:
 	@echo "Building Docker images..."
-	docker-compose build
+	$(DOCKER_COMPOSE) build
 
 rebuild:
 	@echo "Rebuilding Docker images (no cache)..."
-	docker-compose build --no-cache
+	$(DOCKER_COMPOSE) build --no-cache
 
 # Start/Stop
 up:
 	@echo "Starting all services..."
-	docker-compose up -d
+	$(DOCKER_COMPOSE) up -d
 	@echo ""
 	@echo "Services started!"
 	@echo "- Backend API: http://localhost:8333"
@@ -126,52 +129,52 @@ up:
 
 start:
 	@echo "Starting all services (with logs)..."
-	docker-compose up
+	$(DOCKER_COMPOSE) up
 
 down:
 	@echo "Stopping all services..."
-	docker-compose down
+	$(DOCKER_COMPOSE) down
 
 stop: down
 
 restart:
 	@echo "Restarting all services..."
-	docker-compose restart
+	$(DOCKER_COMPOSE) restart
 
 # Individual services
 db-only:
 	@echo "Starting database only..."
-	docker-compose up -d db
+	$(DOCKER_COMPOSE) up -d db
 	@echo "PostgreSQL is running on port 5435"
 
 backend-only:
 	@echo "Starting database and backend..."
-	docker-compose up -d db backend
+	$(DOCKER_COMPOSE) up -d db backend
 	@echo ""
 	@echo "Backend API: http://localhost:8333"
 	@echo "Backend Docs: http://localhost:8333/docs"
 
 frontend-only:
 	@echo "Starting frontend only..."
-	docker-compose up -d frontend
+	$(DOCKER_COMPOSE) up -d frontend
 	@echo "Frontend: http://localhost:4200"
 
 # Logs
 logs:
-	docker-compose logs -f
+	$(DOCKER_COMPOSE) logs -f
 
 logs-backend:
-	docker-compose logs -f backend
+	$(DOCKER_COMPOSE) logs -f backend
 
 logs-db:
-	docker-compose logs -f db
+	$(DOCKER_COMPOSE) logs -f db
 
 logs-frontend:
-	docker-compose logs -f frontend
+	$(DOCKER_COMPOSE) logs -f frontend
 
 # Status
 ps:
-	docker-compose ps
+	$(DOCKER_COMPOSE) ps
 
 # Shell access
 shell-backend:
@@ -215,14 +218,14 @@ test-cov:
 # Cleanup
 clean:
 	@echo "Cleaning up containers and networks..."
-	docker-compose down
+	$(DOCKER_COMPOSE) down
 	@echo "Cleanup complete!"
 
 clean-all:
 	@echo "[WARNING] This will remove all data including database volumes!"
 	@read -p "Are you sure? (y/N): " confirm; \
 	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
-		docker-compose down -v; \
+		$(DOCKER_COMPOSE) down -v; \
 		echo "All containers, networks, and volumes removed!"; \
 	else \
 		echo "Cancelled."; \
@@ -236,15 +239,15 @@ frontend-setup:
 # Frontend npm commands
 npm-install:
 	@echo "Installing npm packages..."
-	@cd frontend && source ~/.nvm/nvm.sh && nvm use && npm install
+	@cd frontend && (type nvm >/dev/null 2>&1 && source ~/.nvm/nvm.sh && nvm use || true) && npm install
 
 npm-dev:
 	@echo "Installing dev dependencies..."
-	@cd frontend && source ~/.nvm/nvm.sh && nvm use && npm install --save-dev $(PKG)
+	@cd frontend && (type nvm >/dev/null 2>&1 && source ~/.nvm/nvm.sh && nvm use || true) && npm install --save-dev $(PKG)
 
 frontend-dev:
 	@echo "Starting frontend development server in Docker..."
-	docker-compose up frontend
+	$(DOCKER_COMPOSE) up frontend
 
 # Health check
 health:
@@ -257,4 +260,4 @@ health:
 	@docker exec ai_agent_hub_db pg_isready -U postgres && echo "[OK] Database is healthy" || echo "[ERROR] Database not responding"
 	@echo ""
 	@echo "Containers:"
-	@docker-compose ps
+	@$(DOCKER_COMPOSE) ps

@@ -140,7 +140,7 @@ cd ai-agent-hub
 cd backend && source .venv/bin/activate && uvicorn app.main:app --reload
 cd frontend && ng serve
 
-# Option B: Docker
+# Option B: Docker (use `docker compose` if docker-compose is not installed)
 docker-compose up
 ```
 

@@ -498,7 +498,9 @@ API endpoints are available at `http://localhost:8000/api/v1`
 EOF
 
 # Update angular.json to use Tailwind
-sed -i '' 's/"styles": \[/"styles": [\n            "src\/tailwind.css",/' angular.json
+# macOS: sed -i '' 's/"styles": \[/"styles": [\n            "src\/tailwind.css",/' angular.json
+# Linux: sed -i 's/"styles": \[/"styles": [\n            "src\/tailwind.css",/' angular.json
+sed -i 's/"styles": \[/"styles": [\n            "src\/tailwind.css",/' angular.json
 
 cd ..
 
