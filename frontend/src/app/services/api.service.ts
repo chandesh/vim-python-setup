@@ -16,6 +16,8 @@ export class ApiService {
     category_id?: string;
     pricing_model?: string;
     featured?: boolean;
+    date_from?: string;
+    date_to?: string;
     sort_by?: string;
     sort_order?: string;
   }): Observable<ApiResponse<AgentListResponse>> {
@@ -32,6 +34,12 @@ export class ApiService {
     if (filters?.featured !== undefined) {
       params = params.set('featured', filters.featured.toString());
     }
+    if (filters?.date_from) {
+      params = params.set('date_from', filters.date_from);
+    }
+    if (filters?.date_to) {
+      params = params.set('date_to', filters.date_to);
+    }
     if (filters?.sort_by) {
       params = params.set('sort_by', filters.sort_by);
     }
@@ -42,7 +50,7 @@ export class ApiService {
     return this.http.get<ApiResponse<AgentListResponse>>(`${this.apiUrl}/agents`, { params });
   }
 
-  searchAgents(query: string, page: number = 1, limit: number = 20, sort_by?: string, sort_order?: string): Observable<ApiResponse<AgentListResponse>> {
+  searchAgents(query: string, page: number = 1, limit: number = 20, sort_by?: string, sort_order?: string, date_from?: string, date_to?: string): Observable<ApiResponse<AgentListResponse>> {
     let params = new HttpParams()
       .set('q', query)
       .set('page', page.toString())
@@ -53,6 +61,12 @@ export class ApiService {
     }
     if (sort_order) {
       params = params.set('sort_order', sort_order);
+    }
+    if (date_from) {
+      params = params.set('date_from', date_from);
+    }
+    if (date_to) {
+      params = params.set('date_to', date_to);
     }
 
     return this.http.get<ApiResponse<AgentListResponse>>(`${this.apiUrl}/agents/search`, { params });
@@ -77,6 +91,8 @@ export class ApiService {
     language?: string;
     scope?: string;
     featured?: boolean;
+    date_from?: string;
+    date_to?: string;
     sort_by?: string;
     sort_order?: string;
   }): Observable<ApiResponse<MCPServerListResponse>> {
@@ -96,6 +112,12 @@ export class ApiService {
     if (filters?.featured !== undefined) {
       params = params.set('featured', filters.featured.toString());
     }
+    if (filters?.date_from) {
+      params = params.set('date_from', filters.date_from);
+    }
+    if (filters?.date_to) {
+      params = params.set('date_to', filters.date_to);
+    }
     if (filters?.sort_by) {
       params = params.set('sort_by', filters.sort_by);
     }
@@ -106,7 +128,7 @@ export class ApiService {
     return this.http.get<ApiResponse<MCPServerListResponse>>('http://localhost:8333/api/mcp-servers', { params });
   }
 
-  searchMCPServers(query: string, page: number = 1, limit: number = 12, sort_by?: string, sort_order?: string): Observable<ApiResponse<MCPServerListResponse>> {
+  searchMCPServers(query: string, page: number = 1, limit: number = 12, sort_by?: string, sort_order?: string, date_from?: string, date_to?: string): Observable<ApiResponse<MCPServerListResponse>> {
     let params = new HttpParams()
       .set('query', query)
       .set('page', page.toString())
@@ -117,6 +139,12 @@ export class ApiService {
     }
     if (sort_order) {
       params = params.set('sort_order', sort_order);
+    }
+    if (date_from) {
+      params = params.set('date_from', date_from);
+    }
+    if (date_to) {
+      params = params.set('date_to', date_to);
     }
 
     return this.http.get<ApiResponse<MCPServerListResponse>>('http://localhost:8333/api/mcp-servers/search', { params });
