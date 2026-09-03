@@ -142,6 +142,50 @@
             </label>
           </div>
 
+          <!-- Date Added Filter -->
+          <div class="filter-group">
+            <label for="datePreset" class="filter-label">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="inline-block mr-1">
+                <path d="M2 2a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V2zm2-1a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V2a1 1 0 00-1-1H4zm1 3a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5A.5.5 0 015 4zm.5 2.5h5a.5.5 0 010 1h-5a.5.5 0 010-1zM6 9.5a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3a.5.5 0 01-.5-.5z"/>
+              </svg>
+              Date Added
+            </label>
+            <select
+              id="datePreset"
+              [(ngModel)]="selectedDatePreset"
+              (change)="onFilterChange()"
+              class="filter-select"
+            >
+              <option value="">All time</option>
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+              <option value="custom">Custom range</option>
+            </select>
+          </div>
+
+          <div class="filter-group" *ngIf="selectedDatePreset === 'custom'">
+            <label for="customDateFrom" class="filter-label">From</label>
+            <input
+              type="date"
+              id="customDateFrom"
+              [(ngModel)]="customDateFrom"
+              (change)="onFilterChange()"
+              class="filter-date-input"
+            />
+          </div>
+
+          <div class="filter-group" *ngIf="selectedDatePreset === 'custom'">
+            <label for="customDateTo" class="filter-label">To</label>
+            <input
+              type="date"
+              id="customDateTo"
+              [(ngModel)]="customDateTo"
+              (change)="onFilterChange()"
+              class="filter-date-input"
+            />
+          </div>
+
           <!-- Clear Filters -->
           <div class="filter-group clear-filters-group">
             <button
@@ -169,7 +213,7 @@
           Showing <strong>{{ servers.length }}</strong> of <strong>{{ totalServers }}</strong> MCP servers
         </span>
       </div>
-      <div *ngIf="searchQuery || selectedCategory || selectedLanguage || selectedScope || showFeaturedOnly" class="active-filters">
+      <div *ngIf="searchQuery || selectedCategory || selectedLanguage || selectedScope || showFeaturedOnly || selectedDatePreset" class="active-filters">
         <span class="filter-badge" *ngIf="searchQuery">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
             <path d="M6 2a4 4 0 100 8 4 4 0 000-8z"/>
@@ -187,6 +231,12 @@
         </span>
         <span class="filter-badge" *ngIf="showFeaturedOnly">
           ⭐ Featured
+        </span>
+        <span class="filter-badge" *ngIf="selectedDatePreset">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M2 2a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V2zm2-1a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V2a1 1 0 00-1-1H4z"/>
+          </svg>
+          Date: {{ getDateFilterLabel() }}
         </span>
       </div>
     </div>

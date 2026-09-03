@@ -35,6 +35,9 @@ export class McpServersComponent implements OnInit {
   selectedLanguage = '';
   selectedScope = '';
   showFeaturedOnly = false;
+  selectedDatePreset = '';
+  customDateFrom = '';
+  customDateTo = '';
   
   // Sorting
   selectedSort = 'star_count_desc';
@@ -80,6 +83,7 @@ export class McpServersComponent implements OnInit {
   loadServers(): void {
     this.loading = true;
     this.error = null;
+    const dateRange = this.resolveDateRange();
 
     // Parse sort selection
     const parts = this.selectedSort.split('_');
@@ -97,7 +101,7 @@ export class McpServersComponent implements OnInit {
 
     if (this.searchQuery.trim()) {
       // Search mode
-      this.apiService.searchMCPServers(this.searchQuery, this.currentPage, this.limit, sortBy, sortOrder).subscribe({
+      this.apiService.searchMCPServers(this.searchQuery, this.currentPage, this.limit, sortBy, sortOrder, dateRange.date_from, dateRange.date_to).subscribe({
         next: (response) => {
           this.handleServersResponse(response);
         },
@@ -112,6 +116,8 @@ export class McpServersComponent implements OnInit {
       if (this.selectedLanguage) filters.language = this.selectedLanguage;
       if (this.selectedScope) filters.scope = this.selectedScope;
       if (this.showFeaturedOnly) filters.featured = true;
+      if (dateRange.date_from) filters.date_from = dateRange.date_from;
+      if (dateRange.date_to) filters.date_to = dateRange.date_to;
       filters.sort_by = sortBy;
       filters.sort_order = sortOrder;
 
@@ -163,9 +169,36 @@ export class McpServersComponent implements OnInit {
     this.selectedLanguage = '';
     this.selectedScope = '';
     this.showFeaturedOnly = false;
+    this.selectedDatePreset = '';
+    this.customDateFrom = '';
+    this.customDateTo = '';
     this.selectedSort = 'star_count_desc';
     this.currentPage = 1;
     this.loadServers();
+  }
+
+  /** Compute date_from/date_to from the preset or custom inputs. */
+  resolveDateRange(): { date_from?: string; date_to?: string } {
+    if (this.selectedDatePreset === 'custom') {
+      if (!this.customDateFrom || !this.customDateTo) {
+        return {};
+      }
+      return { date_from: this.customDateFrom, date_to: this.customDateTo };
+    }
+    if (!this.selectedDatePreset) {
+      return {};
+    }
+    const days = parseInt(this.selectedDatePreset, 10);
+    const from = new Date();
+    from.setDate(from.getDate() - days);
+    return { date_from: from.toISOString().slice(0, 10) };
+  }
+
+  getDateFilterLabel(): string {
+    if (this.selectedDatePreset === 'custom') {
+      return `Custom (${this.customDateFrom || '?'} → ${this.customDateTo || '?'})`;
+    }
+    return `Last ${this.selectedDatePreset} days`;
   }
 
   getScopeBadgeClass(scope: string): string {
