@@ -1,0 +1,71 @@
+<section class="trending-section">
+  <div class="section-heading">
+    <h2 class="section-title">Trending</h2>
+  </div>
+
+  <div class="trending-grid">
+    <div class="trending-card">
+      <div class="trending-header">
+        <h3 class="trending-title">Top AI Agents</h3>
+        <div class="trending-accent"></div>
+      </div>
+
+      @if (agentsLoading) {
+        <div class="state-container">
+          <div class="spinner"></div>
+        </div>
+      } @else if (agentsError) {
+        <div class="state-container">
+          <p class="state-text">{{ agentsError }}</p>
+          <button (click)="loadTrendingAgents()" class="retry-button">Try Again</button>
+        </div>
+      } @else if (agents.length === 0) {
+        <p class="state-text">No agents yet.</p>
+      } @else {
+        <ol class="ranked-list">
+          @for (agent of agents; track agent.id; let i = $index) {
+            <li>
+              <a [routerLink]="['/agents', agent.id]" class="ranked-row">
+                <span class="rank">{{ i + 1 }}</span>
+                <span class="ranked-name">{{ agent.name }}</span>
+                <span class="ranked-metric">{{ formatCount(agent.view_count) }} views</span>
+              </a>
+            </li>
+          }
+        </ol>
+      }
+    </div>
+
+    <div class="trending-card">
+      <div class="trending-header">
+        <h3 class="trending-title">Top MCP Servers</h3>
+        <div class="trending-accent"></div>
+      </div>
+
+      @if (serversLoading) {
+        <div class="state-container">
+          <div class="spinner"></div>
+        </div>
+      } @else if (serversError) {
+        <div class="state-container">
+          <p class="state-text">{{ serversError }}</p>
+          <button (click)="loadTrendingServers()" class="retry-button">Try Again</button>
+        </div>
+      } @else if (servers.length === 0) {
+        <p class="state-text">No MCP servers yet.</p>
+      } @else {
+        <ol class="ranked-list">
+          @for (server of servers; track server.id; let i = $index) {
+            <li>
+              <a [routerLink]="['/mcp-servers', server.id]" class="ranked-row">
+                <span class="rank">{{ i + 1 }}</span>
+                <span class="ranked-name">{{ server.name }}</span>
+                <span class="ranked-metric">★ {{ formatCount(server.star_count) }}</span>
+              </a>
+            </li>
+          }
+        </ol>
+      }
+    </div>
+  </div>
+</section>
