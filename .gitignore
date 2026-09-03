@@ -34,3 +34,6 @@ Thumbs.db
 # Docker
 .env.docker
 .opencode/
+
+# Visual companion mockups
+.superpowers/
