@@ -13,7 +13,10 @@ export class AuthService {
   private readonly tokenKey = 'auth_token';
 
   private currentUser = signal<User | null>(null);
-  private initialized = false;
+  private initStarted = false;
+
+  /** True once the initial session restore attempt has completed. */
+  readonly initialized = signal(false);
 
   /** Currently authenticated user (null when logged out). */
   readonly user = this.currentUser.asReadonly();
@@ -84,10 +87,13 @@ export class AuthService {
 
   /** Restore the session from a stored token exactly once per app run. */
   ensureInitialized(): void {
-    if (!this.initialized) {
-      this.initialized = true;
-      this.loadCurrentUser().subscribe();
+    if (this.initStarted) {
+      return;
     }
+    this.initStarted = true;
+    this.loadCurrentUser().subscribe({
+      complete: () => this.initialized.set(true)
+    });
   }
 
   /** Clear local session. JWT is stateless; server call is best-effort only. */
