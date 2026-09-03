@@ -34,6 +34,9 @@ export class AgentsListComponent implements OnInit {
   selectedCategory = '';
   selectedPricing = '';
   showFeaturedOnly = false;
+  selectedDatePreset = '';
+  customDateFrom = '';
+  customDateTo = '';
 
   // Sorting
   selectedSort = 'created_at_desc';
@@ -66,6 +69,7 @@ export class AgentsListComponent implements OnInit {
   loadAgents(): void {
     this.loading = true;
     this.error = null;
+    const dateRange = this.resolveDateRange();
 
     // Parse sort selection
     const [sortBy, sortOrder] = this.selectedSort.split('_');
@@ -74,7 +78,7 @@ export class AgentsListComponent implements OnInit {
 
     if (this.searchQuery.trim()) {
       // Search mode
-      this.apiService.searchAgents(this.searchQuery, this.currentPage, this.limit, actualSortBy, actualSortOrder).subscribe({
+      this.apiService.searchAgents(this.searchQuery, this.currentPage, this.limit, actualSortBy, actualSortOrder, dateRange.date_from, dateRange.date_to).subscribe({
         next: (response) => {
           this.handleAgentsResponse(response);
         },
@@ -88,6 +92,8 @@ export class AgentsListComponent implements OnInit {
       if (this.selectedCategory) filters.category_id = this.selectedCategory;
       if (this.selectedPricing) filters.pricing_model = this.selectedPricing;
       if (this.showFeaturedOnly) filters.featured = true;
+      if (dateRange.date_from) filters.date_from = dateRange.date_from;
+      if (dateRange.date_to) filters.date_to = dateRange.date_to;
       filters.sort_by = actualSortBy;
       filters.sort_order = actualSortOrder;
 
@@ -138,9 +144,36 @@ export class AgentsListComponent implements OnInit {
     this.selectedCategory = '';
     this.selectedPricing = '';
     this.showFeaturedOnly = false;
+    this.selectedDatePreset = '';
+    this.customDateFrom = '';
+    this.customDateTo = '';
     this.selectedSort = 'created_at_desc';
     this.currentPage = 1;
     this.loadAgents();
+  }
+
+  /** Compute date_from/date_to from the preset or custom inputs. */
+  resolveDateRange(): { date_from?: string; date_to?: string } {
+    if (this.selectedDatePreset === 'custom') {
+      if (!this.customDateFrom || !this.customDateTo) {
+        return {};
+      }
+      return { date_from: this.customDateFrom, date_to: this.customDateTo };
+    }
+    if (!this.selectedDatePreset) {
+      return {};
+    }
+    const days = parseInt(this.selectedDatePreset, 10);
+    const from = new Date();
+    from.setDate(from.getDate() - days);
+    return { date_from: from.toISOString().slice(0, 10) };
+  }
+
+  getDateFilterLabel(): string {
+    if (this.selectedDatePreset === 'custom') {
+      return `Custom (${this.customDateFrom || '?'} → ${this.customDateTo || '?'})`;
+    }
+    return `Last ${this.selectedDatePreset} days`;
   }
 
   getPricingBadgeClass(pricing: string): string {
