@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func, or_
 from typing import Optional
 from uuid import UUID
+from datetime import date
 
+from app.api.date_filter import apply_created_at_range, validate_date_range
 from app.db.database import get_db
 from app.models.agent import Agent
 from app.models.tag import Tag
@@ -28,6 +30,8 @@ def list_agents(
     category_id: Optional[UUID] = Query(None, description="Filter by category"),
     pricing_model: Optional[str] = Query(None, description="Filter by pricing model"),
     featured: Optional[bool] = Query(None, description="Filter featured agents"),
+    date_from: Optional[date] = Query(None, description="Only items created on or after this date (YYYY-MM-DD)"),
+    date_to: Optional[date] = Query(None, description="Only items created on or before this date (YYYY-MM-DD)"),
     sort_by: Optional[str] = Query("created_at", description="Sort by field (name, created_at, view_count)"),
     sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
     db: Session = Depends(get_db)
@@ -49,6 +53,10 @@ def list_agents(
         query = query.filter(Agent.pricing_model == pricing_model)
     if featured is not None:
         query = query.filter(Agent.featured == featured)
+
+    validate_date_range(date_from, date_to)
+    if date_from or date_to:
+        query = apply_created_at_range(query, Agent, date_from, date_to)
 
     # Get total count
     total = query.count()
@@ -86,6 +94,8 @@ def search_agents(
     limit: int = Query(20, ge=1, le=100, description="Items per page"),
     sort_by: Optional[str] = Query("view_count", description="Sort by field (name, created_at, view_count)"),
     sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
+    date_from: Optional[date] = Query(None, description="Only items created on or after this date (YYYY-MM-DD)"),
+    date_to: Optional[date] = Query(None, description="Only items created on or before this date (YYYY-MM-DD)"),
     db: Session = Depends(get_db)
 ):
     """Search agents by name or description.
@@ -111,6 +121,9 @@ def search_agents(
         joinedload(Agent.category),
         joinedload(Agent.tags)
     ).filter(search_filter)
+    validate_date_range(date_from, date_to)
+    if date_from or date_to:
+        query = apply_created_at_range(query, Agent, date_from, date_to)
     total = query.count()
     
     # Apply sorting
