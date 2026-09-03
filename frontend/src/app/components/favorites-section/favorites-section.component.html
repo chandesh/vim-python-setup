@@ -1,0 +1,60 @@
+<section class="favorites-section">
+  <div class="section-heading">
+    <h2 class="section-title">My Favorites</h2>
+    <a routerLink="/profile" class="view-all-link">View all →</a>
+  </div>
+
+  @if (loading) {
+    <div class="state-container">
+      <div class="spinner"></div>
+      <p class="state-text">Loading favorites...</p>
+    </div>
+  } @else if (error) {
+    <div class="state-container">
+      <p class="state-text">{{ error }}</p>
+      <button (click)="loadFavorites()" class="retry-button">Try Again</button>
+    </div>
+  } @else if (favorites.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">☆</div>
+      <h3 class="empty-title">No favorites yet</h3>
+      <p class="state-text">Browse agents and MCP servers, then tap the heart icon to save them here.</p>
+      <div class="empty-actions">
+        <a routerLink="/agents" class="browse-link">Explore AI Agents</a>
+        <a routerLink="/mcp-servers" class="browse-link browse-link-secondary">Explore MCP Servers</a>
+      </div>
+    </div>
+  } @else {
+    <div class="favorites-strip">
+      @for (item of favorites; track item.id) {
+        <a [routerLink]="getItemRoute(item)" class="favorite-card">
+          <span class="item-type-badge" [class.item-type-agent]="item.agent" [class.item-type-server]="!item.agent">
+            {{ getItemTypeLabel(item) }}
+          </span>
+          <div class="favorite-card-body">
+            @if (item.agent?.logo_url || item.mcp_server?.logo_url; as logoUrl) {
+              <img
+                [src]="logoUrl"
+                [alt]="getItemName(item) + ' logo'"
+                (error)="$any($event.target).style.display = 'none'"
+                class="favorite-logo"
+              />
+            }
+            <h3 class="favorite-name">{{ getItemName(item) }}</h3>
+            <p class="favorite-description line-clamp-2">
+              {{ item.agent?.short_description || item.mcp_server?.description }}
+            </p>
+            <div class="favorite-badges">
+              @if (item.agent) {
+                <span class="pricing-badge">{{ item.agent.pricing_model | titlecase }}</span>
+              }
+              @if (item.mcp_server) {
+                <span class="language-badge">{{ item.mcp_server.language }}</span>
+              }
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</section>
