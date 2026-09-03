@@ -33,6 +33,8 @@ Let users filter the AI Agents and MCP Servers listing pages by the date an item
 
    Day-inclusive: `date_from` matches from 00:00:00, `date_to` matches through 23:59:59.999.
 
+   **Timezone semantics:** `created_at` is a `timestamptz` column; the helper builds naive datetimes which Postgres interprets in the session timezone (UTC for the app). The frontend sends date-only strings computed in the client's local timezone, so "last 7 days" maps to UTC day boundaries. A small skew near midnight is acceptable for this feature and not worth a tz-conversion pass.
+
 2. **Endpoint params** — add `date_from: Optional[date]` and `date_to: Optional[date]` to all four endpoints (agents list, agents search, mcp-servers list, mcp-servers search). Apply the helper after existing filters, before count/sort.
 
 3. **Validation** — if both are provided and `date_from > date_to`, raise `HTTPException(422, "date_from must be on or before date_to")`. Guard added before the query runs.
