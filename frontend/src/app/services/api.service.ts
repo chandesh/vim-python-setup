@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiResponse, Agent, AgentDetail, AgentListResponse, Category, MCPServer, MCPServerDetail, MCPServerListResponse } from '../models/agent.model';
+import { ApiResponse, Agent, AgentDetail, AgentGuestTeaser, AgentListResponse, Category, MCPServer, MCPServerDetail, MCPServerGuestTeaser, MCPServerListResponse } from '../models/agent.model';
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +72,8 @@ export class ApiService {
     return this.http.get<ApiResponse<AgentListResponse>>(`${this.apiUrl}/agents/search`, { params });
   }
 
-  getAgent(id: string): Observable<ApiResponse<AgentDetail>> {
-    return this.http.get<ApiResponse<AgentDetail>>(`${this.apiUrl}/agents/${id}`);
+  getAgent(id: string): Observable<ApiResponse<AgentDetail | AgentGuestTeaser>> {
+    return this.http.get<ApiResponse<AgentDetail | AgentGuestTeaser>>(`${this.apiUrl}/agents/${id}`);
   }
 
   // Categories
@@ -150,8 +150,8 @@ export class ApiService {
     return this.http.get<ApiResponse<MCPServerListResponse>>('http://localhost:8333/api/mcp-servers/search', { params });
   }
 
-  getMCPServer(id: string): Observable<ApiResponse<MCPServerDetail>> {
-    return this.http.get<ApiResponse<MCPServerDetail>>(`http://localhost:8333/api/mcp-servers/${id}`);
+  getMCPServer(id: string): Observable<ApiResponse<MCPServerDetail | MCPServerGuestTeaser>> {
+    return this.http.get<ApiResponse<MCPServerDetail | MCPServerGuestTeaser>>(`http://localhost:8333/api/mcp-servers/${id}`);
   }
 
   getLanguages(): Observable<ApiResponse<{ languages: string[] }>> {

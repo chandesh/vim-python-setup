@@ -8,11 +8,12 @@ import { AgentDetail } from '../../models/agent.model';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { FavoriteButtonComponent } from '../favorite-button/favorite-button.component';
+import { LoginWallComponent } from '../login-wall/login-wall.component';
 
 @Component({
   selector: 'app-agent-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, HeaderComponent, FooterComponent, FavoriteButtonComponent],
+  imports: [CommonModule, RouterLink, HeaderComponent, FooterComponent, FavoriteButtonComponent, LoginWallComponent],
   templateUrl: './agent-detail.component.html',
   styleUrls: ['./agent-detail.component.css']
 })
@@ -21,6 +22,7 @@ export class AgentDetailComponent implements OnInit {
   loading = false;
   error: string | null = null;
   notFound = false;
+  restricted = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,14 +45,30 @@ export class AgentDetailComponent implements OnInit {
     this.loading = true;
     this.error = null;
     this.notFound = false;
+    this.restricted = false;
     this.agent = null;
 
     this.apiService.getAgent(id).subscribe({
       next: (response) => {
         this.loading = false;
         if (response.success && response.data) {
-          this.agent = response.data;
-          this.favoritesService.refreshFavoritesState();
+          const data: any = response.data;
+          this.restricted = !!data?.restricted;
+          if (this.restricted) {
+            const t = data.agent;
+            this.agent = {
+              ...t,
+              description: '',
+              website_url: '',
+              category_id: t.category?.id ?? '',
+              updated_at: t.created_at,
+              tags: [],
+              related_agents: [],
+            };
+          } else {
+            this.agent = data;
+            this.favoritesService.refreshFavoritesState();
+          }
         } else {
           this.notFound = true;
         }

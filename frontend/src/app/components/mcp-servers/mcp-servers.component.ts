@@ -8,11 +8,12 @@ import { MCPServer, Category } from '../../models/agent.model';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { FavoriteButtonComponent } from '../favorite-button/favorite-button.component';
+import { LoginWallComponent } from '../login-wall/login-wall.component';
 
 @Component({
   selector: 'app-mcp-servers',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, FooterComponent, FavoriteButtonComponent],
+  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, FooterComponent, FavoriteButtonComponent, LoginWallComponent],
   templateUrl: './mcp-servers.component.html',
   styleUrls: ['./mcp-servers.component.css']
 })
@@ -22,6 +23,7 @@ export class McpServersComponent implements OnInit {
   languages: string[] = [];
   loading = false;
   error: string | null = null;
+  isGuestPreview = false;
   
   // Pagination
   currentPage = 1;
@@ -138,6 +140,7 @@ export class McpServersComponent implements OnInit {
       this.servers = response.data.servers;
       this.totalServers = response.data.total;
       this.totalPages = Math.ceil(this.totalServers / this.limit);
+      this.isGuestPreview = !!response.data?.is_guest_preview;
     }
   }
 

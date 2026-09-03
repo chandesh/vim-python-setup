@@ -1,0 +1,29 @@
+<div class="login-wall" [class.login-wall-overlay]="variant() === 'overlay'">
+  <div class="wall-accent"></div>
+  <div class="lock-circle" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M8 1a3.5 3.5 0 0 0-3.5 3.5V7H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 15h8a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 12 7h-.5V4.5A3.5 3.5 0 0 0 8 1zm2 6H6V4.5a2 2 0 1 1 4 0V7z"/>
+    </svg>
+  </div>
+  @if (searchQuery(); as q) {
+    <h3 class="wall-title">Sign in to see all results for "{{ q }}"</h3>
+    <p class="wall-subtitle">
+      You're viewing a free preview of {{ itemType() }} matching your search.
+      Create a free account to see all {{ totalCount() ?? 0 }} results and full details.
+    </p>
+  } @else {
+    <h3 class="wall-title">Sign in to browse all {{ itemType() }}</h3>
+    <p class="wall-subtitle">
+      You're viewing a free preview.
+      @if (totalCount(); as total) {
+        Create a free account to see all {{ total }} {{ itemType() }} and full details.
+      } @else {
+        Create a free account to unlock full details.
+      }
+    </p>
+  }
+  <div class="wall-actions">
+    <a [routerLink]="['/login']" [queryParams]="{ returnUrl: currentUrl }" class="wall-cta-primary">Sign In</a>
+    <a [routerLink]="['/register']" [queryParams]="{ returnUrl: currentUrl }" class="wall-cta-secondary">Create Account</a>
+  </div>
+</div>

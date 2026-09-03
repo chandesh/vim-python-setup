@@ -7,8 +7,10 @@ from datetime import date
 
 from app.api.date_filter import apply_created_at_range, validate_date_range
 from app.db.database import get_db
+from app.core.dependencies import get_optional_user
 from app.models.agent import Agent
 from app.models.tag import Tag
+from app.models.user import User
 from app.schemas.agent import (
     AgentCreate,
     AgentDetailResponse,
@@ -34,12 +36,14 @@ def list_agents(
     date_to: Optional[date] = Query(None, description="Only items created on or before this date (YYYY-MM-DD)"),
     sort_by: Optional[str] = Query("created_at", description="Sort by field (name, created_at, view_count)"),
     sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
 ):
     """List all agents with pagination, filtering, and sorting.
     
     Supports filtering by category, pricing model, and featured status.
     Supports sorting by name, created_at, or view_count.
+    Guests (unauthenticated) only see a capped 3-item preview.
     """
     query = db.query(Agent).options(
         joinedload(Agent.category),
@@ -69,11 +73,19 @@ def list_agents(
     }
     sort_field = sort_fields.get(sort_by, Agent.created_at)
     query = query.order_by(sort_field.desc() if sort_order == "desc" else sort_field.asc())
+
+    # Guests: cap preview window at 3 items regardless of requested page/limit
+    effective_limit = limit
+    is_guest_preview = False
+    if current_user is None:
+        is_guest_preview = True
+        effective_limit = min(limit, 3)
+        page = 1
     
     # Get paginated results
     agents = query\
         .offset((page - 1) * limit)\
-        .limit(limit)\
+        .limit(effective_limit)\
         .all()
     
     return ApiResponse(
@@ -82,7 +94,8 @@ def list_agents(
             agents=agents,
             total=total,
             page=page,
-            limit=limit
+            limit=effective_limit,
+            is_guest_preview=is_guest_preview
         )
     )
 
@@ -96,7 +109,8 @@ def search_agents(
     sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
     date_from: Optional[date] = Query(None, description="Only items created on or after this date (YYYY-MM-DD)"),
     date_to: Optional[date] = Query(None, description="Only items created on or before this date (YYYY-MM-DD)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
 ):
     """Search agents by name or description.
     
@@ -108,7 +122,8 @@ def search_agents(
         sort_order: Sort order (asc/desc)
         
     Returns:
-        Paginated list of matching agents
+        Paginated list of matching agents.
+        Guests only see a capped 3-item preview.
     """
     # Search in name, short_description, and description
     search_filter = or_(
@@ -134,10 +149,18 @@ def search_agents(
     }
     sort_field = sort_fields.get(sort_by, Agent.view_count)
     query = query.order_by(sort_field.desc() if sort_order == "desc" else sort_field.asc())
+
+    # Guests: cap preview window at 3 items regardless of requested page/limit
+    effective_limit = limit
+    is_guest_preview = False
+    if current_user is None:
+        is_guest_preview = True
+        effective_limit = min(limit, 3)
+        page = 1
     
     agents = query\
         .offset((page - 1) * limit)\
-        .limit(limit)\
+        .limit(effective_limit)\
         .all()
     
     return ApiResponse(
@@ -146,26 +169,31 @@ def search_agents(
             agents=agents,
             total=total,
             page=page,
-            limit=limit
+            limit=effective_limit,
+            is_guest_preview=is_guest_preview
         )
     )
 
 
-@router.get("/{agent_id}", response_model=ApiResponse[AgentDetailResponse])
+@router.get("/{agent_id}")
 def get_agent(
     agent_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
 ):
     """Get a specific agent by ID.
 
     Also increments the view count for the agent and returns
     related agents from the same category.
 
+    Guests (unauthenticated) receive a restricted teaser with identity
+    fields only — no description, tags, related agents, or view inflation.
+
     Args:
         agent_id: UUID of the agent to retrieve
 
     Returns:
-        Agent details with related agents
+        Agent details with related agents, or a restricted guest teaser
 
     Raises:
         404: Agent not found
@@ -180,6 +208,27 @@ def get_agent(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Agent with id {agent_id} not found"
         )
+
+    # Guests: teaser only, no view-count inflation
+    if current_user is None:
+        return {
+            "success": True,
+            "data": {
+                "restricted": True,
+                "agent": {
+                    "id": agent.id,
+                    "name": agent.name,
+                    "slug": agent.slug,
+                    "short_description": agent.short_description,
+                    "logo_url": agent.logo_url,
+                    "pricing_model": agent.pricing_model.value,
+                    "featured": agent.featured,
+                    "category": {"id": agent.category.id, "name": agent.category.name} if agent.category else None,
+                    "view_count": agent.view_count,
+                    "created_at": agent.created_at,
+                },
+            },
+        }
 
     # Increment view count
     agent.view_count += 1

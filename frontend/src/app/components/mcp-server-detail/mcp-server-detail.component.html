@@ -34,7 +34,7 @@
       <!-- Hero Card -->
       <section class="hero-card">
         <div class="hero-accent"></div>
-        <div class="hero-body">
+        <div class="hero-body" [class.blurred-content]="restricted">
           <div class="hero-header">
             <!-- Logo -->
             <div class="hero-logo">
@@ -94,7 +94,7 @@
           </div>
 
           <!-- Package info -->
-          <div *ngIf="server.npm_package || server.pypi_package" class="packages-row">
+          <div *ngIf="!restricted && (server.npm_package || server.pypi_package)" class="packages-row">
             <div *ngIf="server.npm_package" class="package-chip">
               <span class="package-label">npm</span>
               <code>{{ server.npm_package }}</code>
@@ -105,8 +105,8 @@
             </div>
           </div>
 
-          <div class="cta-row">
-            <app-favorite-button [itemId]="server.id" variant="button"></app-favorite-button>
+          <div class="cta-row" *ngIf="!restricted">
+            <app-favorite-button [itemId]="server.id" itemType="mcp-server" variant="button"></app-favorite-button>
             <a
               [href]="server.repository_url"
               target="_blank"
@@ -120,10 +120,14 @@
             </a>
           </div>
         </div>
+
+        <div *ngIf="restricted" class="overlay-backdrop">
+          <app-login-wall variant="overlay" itemType="MCP servers"></app-login-wall>
+        </div>
       </section>
 
       <!-- Description & Tags -->
-      <section class="content-card">
+      <section *ngIf="!restricted" class="content-card">
         <h2 class="section-title">About {{ server.name }}</h2>
         <p class="full-description">{{ server.description }}</p>
 
@@ -136,7 +140,7 @@
       </section>
 
       <!-- Related Servers -->
-      <section *ngIf="relatedServers.length > 0" class="related-section">
+      <section *ngIf="!restricted && relatedServers.length > 0" class="related-section">
         <h2 class="section-title">Related Servers</h2>
         <div class="related-grid">
           <a

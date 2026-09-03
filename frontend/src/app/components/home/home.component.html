@@ -8,9 +8,11 @@
         <p class="loading-text">Loading your dashboard...</p>
       </div>
     } @else if (isAuthenticated()) {
-      <app-dashboard-greeting [user]="user()"></app-dashboard-greeting>
-      <app-favorites-section></app-favorites-section>
-      <app-trending-section></app-trending-section>
+      <div class="dashboard-container">
+        <app-dashboard-greeting [user]="user()"></app-dashboard-greeting>
+        <app-favorites-section></app-favorites-section>
+        <app-trending-section></app-trending-section>
+      </div>
     } @else {
     <!-- Hero Section -->
     <section class="hero-section">

@@ -34,7 +34,7 @@
       <!-- Hero Card -->
       <section class="hero-card">
         <div class="hero-accent"></div>
-        <div class="hero-body">
+        <div class="hero-body" [class.blurred-content]="restricted">
           <div class="hero-header">
             <!-- Logo -->
             <div class="hero-logo">
@@ -85,8 +85,8 @@
             </span>
           </div>
 
-          <div class="cta-row">
-            <app-favorite-button [itemId]="agent.id" variant="button"></app-favorite-button>
+          <div class="cta-row" *ngIf="!restricted">
+            <app-favorite-button [itemId]="agent.id" itemType="agent" variant="button"></app-favorite-button>
             <a
               [href]="agent.website_url"
               target="_blank"
@@ -101,10 +101,14 @@
             </a>
           </div>
         </div>
+
+        <div *ngIf="restricted" class="overlay-backdrop">
+          <app-login-wall variant="overlay" itemType="AI agents"></app-login-wall>
+        </div>
       </section>
 
       <!-- Description & Tags -->
-      <section class="content-card">
+      <section *ngIf="!restricted" class="content-card">
         <h2 class="section-title">About {{ agent.name }}</h2>
         <p class="full-description">{{ agent.description }}</p>
 
@@ -117,7 +121,7 @@
       </section>
 
       <!-- Related Agents -->
-      <section *ngIf="agent.related_agents && agent.related_agents.length > 0" class="related-section">
+      <section *ngIf="!restricted && agent.related_agents && agent.related_agents.length > 0" class="related-section">
         <h2 class="section-title">Related Agents</h2>
         <div class="related-grid">
           <a

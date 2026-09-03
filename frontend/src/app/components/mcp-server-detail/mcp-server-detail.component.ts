@@ -7,11 +7,12 @@ import { MCPServer } from '../../models/agent.model';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { FavoriteButtonComponent } from '../favorite-button/favorite-button.component';
+import { LoginWallComponent } from '../login-wall/login-wall.component';
 
 @Component({
   selector: 'app-mcp-server-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, HeaderComponent, FooterComponent, FavoriteButtonComponent],
+  imports: [CommonModule, RouterLink, HeaderComponent, FooterComponent, FavoriteButtonComponent, LoginWallComponent],
   templateUrl: './mcp-server-detail.component.html',
   styleUrls: ['./mcp-server-detail.component.css']
 })
@@ -21,6 +22,7 @@ export class McpServerDetailComponent implements OnInit {
   loading = false;
   error: string | null = null;
   notFound = false;
+  restricted = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -42,16 +44,35 @@ export class McpServerDetailComponent implements OnInit {
     this.loading = true;
     this.error = null;
     this.notFound = false;
+    this.restricted = false;
     this.server = null;
     this.relatedServers = [];
 
     this.apiService.getMCPServer(id).subscribe({
       next: (response) => {
         this.loading = false;
-        if (response.success && response.data?.server) {
-          this.server = response.data.server;
-          this.relatedServers = response.data.related_servers || [];
-          this.favoritesService.refreshFavoritesState();
+        if (response.success && response.data) {
+          const data: any = response.data;
+          this.restricted = !!data?.restricted;
+          if (this.restricted) {
+            const t = data.server;
+            this.server = {
+              ...t,
+              description: t.short_description,
+              repository_url: '',
+              category_id: t.category?.id ?? '',
+              updated_at: t.created_at,
+              npm_package: null,
+              pypi_package: null,
+              featured: false,
+              tags: [],
+            };
+            this.relatedServers = [];
+          } else {
+            this.server = data.server;
+            this.relatedServers = data.related_servers || [];
+            this.favoritesService.refreshFavoritesState();
+          }
         } else {
           this.notFound = true;
         }

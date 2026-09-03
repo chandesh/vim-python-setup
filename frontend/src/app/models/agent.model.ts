@@ -27,6 +27,7 @@ export interface AgentListResponse {
   total: number;
   page: number;
   limit: number;
+  is_guest_preview?: boolean;
 }
 
 export interface AgentSummary {
@@ -43,6 +44,23 @@ export interface AgentSummary {
 
 export interface AgentDetail extends Agent {
   related_agents: AgentSummary[];
+}
+
+/** Restricted guest teaser returned for unauthenticated detail requests. */
+export interface AgentGuestTeaser {
+  restricted: true;
+  agent: {
+    id: string;
+    name: string;
+    slug: string;
+    short_description: string;
+    logo_url: string | null;
+    pricing_model: 'free' | 'freemium' | 'paid';
+    featured: boolean;
+    category: { id: string; name: string } | null;
+    view_count: number;
+    created_at: string;
+  };
 }
 
 export interface ApiResponse<T> {
@@ -88,6 +106,7 @@ export interface MCPServerListResponse {
   page: number;
   limit: number;
   total_pages?: number;
+  is_guest_preview?: boolean;
 }
 
 export interface MCPServerSummary {
@@ -106,4 +125,23 @@ export interface MCPServerSummary {
 export interface MCPServerDetail {
   server: MCPServer;
   related_servers: MCPServerSummary[];
+}
+
+/** Restricted guest teaser returned for unauthenticated MCP server detail requests. */
+export interface MCPServerGuestTeaser {
+  restricted: true;
+  server: {
+    id: string;
+    name: string;
+    slug: string;
+    short_description: string;
+    language: string;
+    logo_url: string | null;
+    star_count: number;
+    scope: 'local' | 'cloud' | 'hybrid';
+    repository_host: string;
+    category: { id: string; name: string } | null;
+    view_count: number;
+    created_at: string;
+  };
 }

@@ -1,0 +1,129 @@
+/* Login wall - gates guest users with sign-in CTAs */
+
+.login-wall {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1.5rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 0.875rem;
+  overflow: hidden;
+  height: 100%;
+  min-height: 300px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.wall-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-blue), var(--color-cyan));
+}
+
+.lock-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-blue), var(--color-cyan));
+  color: var(--accent-contrast);
+  box-shadow: 0 4px 12px rgba(38, 139, 210, 0.3);
+}
+
+.wall-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.wall-subtitle {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 320px;
+}
+
+.wall-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.wall-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-contrast);
+  background: linear-gradient(135deg, var(--color-blue), var(--color-cyan));
+  border-radius: 0.625rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(38, 139, 210, 0.3);
+}
+
+.wall-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(38, 139, 210, 0.4);
+}
+
+.wall-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background-color: var(--bg-highlight);
+  border: 1px solid var(--border-color);
+  border-radius: 0.625rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.wall-cta-secondary:hover {
+  border-color: var(--accent-primary);
+  background-color: var(--bg-secondary);
+}
+
+/* Overlay variant: transparent-backed, sits inside the blur backdrop */
+.login-wall-overlay {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-height: 0;
+}
+
+.login-wall-overlay .wall-accent {
+  display: none;
+}
+
+.login-wall-overlay .wall-subtitle {
+  max-width: 360px;
+}
+
+/* Mobile: stack CTA buttons vertically */
+@media (max-width: 480px) {
+  .wall-actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .wall-cta-primary,
+  .wall-cta-secondary {
+    justify-content: center;
+  }
+}

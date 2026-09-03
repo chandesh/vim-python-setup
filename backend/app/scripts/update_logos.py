@@ -46,7 +46,7 @@ def update_mcp_server_logos(db: Session):
         "modelcontextprotocol": "https://avatars.githubusercontent.com/u/187283410",
         "prisma-mcp": "https://avatars.githubusercontent.com/u/17219288",
         "mindsdb-mcp": "https://avatars.githubusercontent.com/u/51025925",
-        "github-mcp-server": "https://github.githubassets.com/assets/GitHub-Mark.png",
+        "github-mcp-server": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
         "github-mcp": "https://avatars.githubusercontent.com/u/187283410",
         "screenpipe-mcp": "https://avatars.githubusercontent.com/u/183546725",
         "playwright-mcp": "https://avatars.githubusercontent.com/u/6154722",

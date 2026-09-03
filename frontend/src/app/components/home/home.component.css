@@ -9,6 +9,25 @@
   flex: 1;
 }
 
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 1rem 0.75rem;
+  }
+}
+
 /* ========================================
    HERO SECTION
    ======================================== */

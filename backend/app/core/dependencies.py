@@ -54,3 +54,30 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
+
+
+def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
+) -> User | None:
+    """Resolve user from Bearer token, or None for anonymous requests.
+
+    Unlike get_current_user, never raises 401 — used by endpoints that
+    serve both guests (limited data) and signed-in users (full data).
+    """
+    if credentials is None:
+        return None
+
+    sub = decode_access_token(credentials.credentials)
+    if not sub:
+        return None
+
+    try:
+        user_id = UUID(sub)
+    except ValueError:
+        return None
+
+    user = get_user_by_id(db, user_id)
+    if not user or not user.is_active:
+        return None
+    return user

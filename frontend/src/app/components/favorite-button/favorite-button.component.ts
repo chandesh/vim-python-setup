@@ -18,6 +18,9 @@ export class FavoriteButtonComponent {
   /** ID of the agent or MCP server this button toggles. */
   itemId = input.required<string>();
 
+  /** Type of item this button toggles, so the favorite targets the right entity. */
+  itemType = input<'agent' | 'mcp-server'>('agent');
+
   /** Visual style: compact heart icon or full labeled button. */
   variant = input<'icon' | 'button'>('icon');
 
@@ -45,7 +48,10 @@ export class FavoriteButtonComponent {
         error: (err) => console.error('Error removing favorite:', err)
       });
     } else {
-      this.favoritesService.addToFavorites(id).subscribe({
+      const request = this.itemType() === 'agent'
+        ? this.favoritesService.addToFavorites(id)
+        : this.favoritesService.addToFavorites(undefined, id);
+      request.subscribe({
         error: (err) => console.error('Error adding favorite:', err)
       });
     }

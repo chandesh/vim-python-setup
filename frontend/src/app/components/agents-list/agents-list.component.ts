@@ -9,11 +9,12 @@ import { Agent, Category } from '../../models/agent.model';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { FavoriteButtonComponent } from '../favorite-button/favorite-button.component';
+import { LoginWallComponent } from '../login-wall/login-wall.component';
 
 @Component({
   selector: 'app-agents-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, FooterComponent, FavoriteButtonComponent],
+  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, FooterComponent, FavoriteButtonComponent, LoginWallComponent],
   templateUrl: './agents-list.component.html',
   styleUrls: ['./agents-list.component.css']
 })
@@ -22,6 +23,7 @@ export class AgentsListComponent implements OnInit {
   categories: Category[] = [];
   loading = false;
   error: string | null = null;
+  isGuestPreview = false;
 
   // Pagination
   currentPage = 1;
@@ -114,6 +116,7 @@ export class AgentsListComponent implements OnInit {
       this.agents = response.data.agents;
       this.totalAgents = response.data.total;
       this.totalPages = Math.ceil(this.totalAgents / this.limit);
+      this.isGuestPreview = !!response.data?.is_guest_preview;
     }
   }
 

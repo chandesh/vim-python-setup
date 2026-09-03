@@ -77,6 +77,7 @@ class AgentListResponse(BaseSchema):
     total: int
     page: int
     limit: int
+    is_guest_preview: bool = False
 
 
 class AgentSummary(BaseSchema, IDMixin, TimestampMixin):

@@ -1,7 +1,7 @@
 .PHONY: help init build up down start stop restart logs clean rebuild db-only backend-only frontend-only ps shell-backend shell-db test npm-install npm-dev frontend-dev
 
 # Auto-detect docker compose command (supports both v1 standalone and v2 plugin)
-DOCKER_COMPOSE := $(shell command -v docker-compose 2>/dev/null && echo "docker-compose" || echo "docker compose")
+DOCKER_COMPOSE := $(shell command -v docker-compose >/dev/null 2>&1 && echo "docker-compose" || echo "docker compose")
 
 # Default target
 help:
@@ -205,6 +205,14 @@ db-seed:
 populate-mcp:
 	@echo "Populating MCP servers data..."
 	docker exec ai_agent_hub_backend python app/scripts/populate_mcp_servers.py
+
+db-ingest-mcp:
+	@echo "Ingesting top MCP servers from GitHub..."
+	docker exec ai_agent_hub_backend python app/scripts/ingest_mcp_servers.py
+
+db-ingest-agents:
+	@echo "Ingesting curated AI agent catalog..."
+	docker exec ai_agent_hub_backend python app/scripts/ingest_agents.py
 
 # Testing
 test:

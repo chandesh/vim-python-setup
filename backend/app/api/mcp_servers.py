@@ -8,9 +8,11 @@ from datetime import date
 
 from app.api.date_filter import apply_created_at_range, validate_date_range
 from app.db.database import get_db
+from app.core.dependencies import get_optional_user
 from app.models.mcp_server import MCPServer, ServerScope
 from app.models.category import Category
 from app.models.tag import Tag
+from app.models.user import User
 
 router = APIRouter(prefix="/api/mcp-servers", tags=["mcp-servers"])
 
@@ -27,9 +29,13 @@ async def get_mcp_servers(
     date_to: Optional[date] = Query(None, description="Only items created on or before this date (YYYY-MM-DD)"),
     sort_by: Optional[str] = Query("star_count", description="Sort by field (name, created_at, star_count, view_count)"),
     sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
 ):
-    """Get list of MCP servers with pagination, filters, and sorting."""
+    """Get list of MCP servers with pagination, filters, and sorting.
+
+    Guests (unauthenticated) only see a capped 3-item preview.
+    """
     try:
         # Base query with eager loading
         query = db.query(MCPServer).options(
@@ -67,9 +73,17 @@ async def get_mcp_servers(
         sort_field = sort_fields.get(sort_by, MCPServer.star_count)
         query = query.order_by(sort_field.desc() if sort_order == "desc" else sort_field.asc())
         
+        # Guests: cap preview window at 3 items regardless of requested page/limit
+        effective_limit = limit
+        is_guest_preview = False
+        if current_user is None:
+            is_guest_preview = True
+            effective_limit = min(limit, 3)
+            page = 1
+        
         # Apply pagination
         offset = (page - 1) * limit
-        servers = query.offset(offset).limit(limit).all()
+        servers = query.offset(offset).limit(effective_limit).all()
         
         return {
             "success": True,
@@ -77,8 +91,9 @@ async def get_mcp_servers(
                 "servers": servers,
                 "total": total,
                 "page": page,
-                "limit": limit,
-                "total_pages": (total + limit - 1) // limit
+                "limit": effective_limit,
+                "total_pages": (total + effective_limit - 1) // effective_limit if effective_limit else 0,
+                "is_guest_preview": is_guest_preview
             }
         }
     except HTTPException:
@@ -96,9 +111,13 @@ async def search_mcp_servers(
     sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
     date_from: Optional[date] = Query(None, description="Only items created on or after this date (YYYY-MM-DD)"),
     date_to: Optional[date] = Query(None, description="Only items created on or before this date (YYYY-MM-DD)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
 ):
-    """Search MCP servers by name, description, or language with sorting."""
+    """Search MCP servers by name, description, or language with sorting.
+
+    Guests (unauthenticated) only see a capped 3-item preview.
+    """
     try:
         # Search query with eager loading
         search_filter = or_(
@@ -129,9 +148,17 @@ async def search_mcp_servers(
         sort_field = sort_fields.get(sort_by, MCPServer.star_count)
         db_query = db_query.order_by(sort_field.desc() if sort_order == "desc" else sort_field.asc())
         
+        # Guests: cap preview window at 3 items regardless of requested page/limit
+        effective_limit = limit
+        is_guest_preview = False
+        if current_user is None:
+            is_guest_preview = True
+            effective_limit = min(limit, 3)
+            page = 1
+        
         # Apply pagination
         offset = (page - 1) * limit
-        servers = db_query.offset(offset).limit(limit).all()
+        servers = db_query.offset(offset).limit(effective_limit).all()
         
         return {
             "success": True,
@@ -139,8 +166,9 @@ async def search_mcp_servers(
                 "servers": servers,
                 "total": total,
                 "page": page,
-                "limit": limit,
-                "total_pages": (total + limit - 1) // limit
+                "limit": effective_limit,
+                "total_pages": (total + effective_limit - 1) // effective_limit if effective_limit else 0,
+                "is_guest_preview": is_guest_preview
             }
         }
     except HTTPException:
@@ -152,12 +180,16 @@ async def search_mcp_servers(
 @router.get("/{server_id}")
 async def get_mcp_server(
     server_id: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
 ):
     """Get a single MCP server by ID.
 
     Also increments the view count and returns related servers
     sharing the same category or language.
+
+    Guests (unauthenticated) receive a restricted teaser with identity
+    fields only — no full description, tags, packages, or repo URL.
     """
     try:
         server = db.query(MCPServer).options(
@@ -167,6 +199,30 @@ async def get_mcp_server(
 
         if not server:
             raise HTTPException(status_code=404, detail="MCP Server not found")
+
+        # Guests: teaser only, no view-count inflation
+        if current_user is None:
+            from urllib.parse import urlparse
+            return {
+                "success": True,
+                "data": {
+                    "restricted": True,
+                    "server": {
+                        "id": server.id,
+                        "name": server.name,
+                        "slug": server.slug,
+                        "short_description": (server.description or "")[:160],
+                        "language": server.language,
+                        "logo_url": server.logo_url,
+                        "star_count": server.star_count,
+                        "scope": server.scope.value,
+                        "repository_host": urlparse(server.repository_url).netloc,
+                        "category": {"id": server.category.id, "name": server.category.name} if server.category else None,
+                        "view_count": server.view_count,
+                        "created_at": server.created_at,
+                    },
+                },
+            }
 
         # Increment view count
         server.view_count += 1
