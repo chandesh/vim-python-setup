@@ -1,0 +1,10 @@
+<section class="greeting-card">
+  <div class="greeting-accent"></div>
+  <div class="greeting-body">
+    <h1 class="greeting-title">
+      {{ greeting }}{{ user()?.username ? ', ' + user()?.username : '' }}
+    </h1>
+    <p class="greeting-subtitle">Here's what's new in your AI Agent Hub</p>
+    <span class="greeting-date">{{ today }}</span>
+  </div>
+</section>
