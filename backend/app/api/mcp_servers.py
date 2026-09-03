@@ -4,7 +4,9 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import or_, func
 from typing import Optional
 from uuid import UUID
+from datetime import date
 
+from app.api.date_filter import apply_created_at_range, validate_date_range
 from app.db.database import get_db
 from app.models.mcp_server import MCPServer, ServerScope
 from app.models.category import Category
@@ -21,6 +23,8 @@ async def get_mcp_servers(
     language: Optional[str] = Query(None, description="Filter by programming language"),
     scope: Optional[ServerScope] = Query(None, description="Filter by scope (local/cloud/hybrid)"),
     featured: Optional[bool] = Query(None, description="Filter by featured status"),
+    date_from: Optional[date] = Query(None, description="Only items created on or after this date (YYYY-MM-DD)"),
+    date_to: Optional[date] = Query(None, description="Only items created on or before this date (YYYY-MM-DD)"),
     sort_by: Optional[str] = Query("star_count", description="Sort by field (name, created_at, star_count, view_count)"),
     sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
     db: Session = Depends(get_db)
@@ -45,6 +49,10 @@ async def get_mcp_servers(
         
         if featured is not None:
             query = query.filter(MCPServer.featured == featured)
+        
+        validate_date_range(date_from, date_to)
+        if date_from or date_to:
+            query = apply_created_at_range(query, MCPServer, date_from, date_to)
         
         # Get total count
         total = query.count()
@@ -73,6 +81,8 @@ async def get_mcp_servers(
                 "total_pages": (total + limit - 1) // limit
             }
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -84,6 +94,8 @@ async def search_mcp_servers(
     limit: int = Query(12, ge=1, le=100, description="Items per page"),
     sort_by: Optional[str] = Query("star_count", description="Sort by field (name, created_at, star_count, view_count)"),
     sort_order: Optional[str] = Query("desc", description="Sort order (asc, desc)"),
+    date_from: Optional[date] = Query(None, description="Only items created on or after this date (YYYY-MM-DD)"),
+    date_to: Optional[date] = Query(None, description="Only items created on or before this date (YYYY-MM-DD)"),
     db: Session = Depends(get_db)
 ):
     """Search MCP servers by name, description, or language with sorting."""
@@ -99,6 +111,10 @@ async def search_mcp_servers(
             joinedload(MCPServer.category),
             joinedload(MCPServer.tags)
         ).filter(search_filter)
+        
+        validate_date_range(date_from, date_to)
+        if date_from or date_to:
+            db_query = apply_created_at_range(db_query, MCPServer, date_from, date_to)
         
         # Get total count
         total = db_query.count()
@@ -127,6 +143,8 @@ async def search_mcp_servers(
                 "total_pages": (total + limit - 1) // limit
             }
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
