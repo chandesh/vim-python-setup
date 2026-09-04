@@ -35,6 +35,10 @@ export class TrendingSectionComponent implements OnInit {
         this.agentsLoading = false;
         if (response.success && response.data) {
           this.agents = response.data.agents;
+          this.agentsChartData = {
+            labels: this.agents.map(agent => agent.name),
+            datasets: [{ data: this.agents.map(agent => agent.view_count) }]
+          };
         } else {
           this.agentsError = 'Could not load trending agents.';
         }
@@ -54,6 +58,10 @@ export class TrendingSectionComponent implements OnInit {
         this.serversLoading = false;
         if (response.success && response.data) {
           this.servers = response.data.servers;
+          this.serversChartData = {
+            labels: this.servers.map(server => server.name),
+            datasets: [{ data: this.servers.map(server => server.star_count) }]
+          };
         } else {
           this.serversError = 'Could not load trending MCP servers.';
         }
@@ -72,41 +80,26 @@ export class TrendingSectionComponent implements OnInit {
     return count.toString();
   }
 
-  get agentsChartData(): ChartData {
-    return {
-      labels: this.agents.map(agent => agent.name),
-      datasets: [{ data: this.agents.map(agent => agent.view_count) }]
-    };
-  }
+  agentsChartData: ChartData = { labels: [], datasets: [] };
+  serversChartData: ChartData = { labels: [], datasets: [] };
 
-  get serversChartData(): ChartData {
-    return {
-      labels: this.servers.map(server => server.name),
-      datasets: [{ data: this.servers.map(server => server.star_count) }]
-    };
-  }
-
-  get agentsChartOptions(): ChartOptions {
-    return {
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: (context: any) => `${this.formatCount(context.parsed.x)} views`
-          }
+  agentsChartOptions: ChartOptions = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (context: any) => `${this.formatCount(context.parsed.x)} views`
         }
       }
-    };
-  }
+    }
+  };
 
-  get serversChartOptions(): ChartOptions {
-    return {
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: (context: any) => `★ ${this.formatCount(context.parsed.x)}`
-          }
+  serversChartOptions: ChartOptions = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (context: any) => `★ ${this.formatCount(context.parsed.x)}`
         }
       }
-    };
-  }
+    }
+  };
 }

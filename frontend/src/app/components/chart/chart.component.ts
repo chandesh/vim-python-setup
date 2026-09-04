@@ -23,11 +23,15 @@ export class ChartComponent {
   @ViewChild('canvas', { static: true }) private canvasRef!: ElementRef<HTMLCanvasElement>;
 
   private chart: Chart | null = null;
+  private lastDataKey = '';
 
-  /** Re-render whenever the theme or any chart input changes. */
+  /** Re-render when the theme or chart inputs change; skip re-animating on no-op changes. */
   private renderEffect = effect(() => {
     this.themeService.theme();
-    this.renderOrUpdate();
+    const dataKey = JSON.stringify(this.data());
+    const dataChanged = dataKey !== this.lastDataKey;
+    this.lastDataKey = dataKey;
+    this.renderOrUpdate(dataChanged);
   });
 
   ngOnDestroy(): void {
@@ -35,7 +39,7 @@ export class ChartComponent {
     this.chart = null;
   }
 
-  private renderOrUpdate(): void {
+  private renderOrUpdate(animate: boolean): void {
     const ctx = this.canvasRef.nativeElement.getContext('2d');
     if (!ctx) {
       return;
@@ -45,7 +49,7 @@ export class ChartComponent {
     if (this.chart && (this.chart.config as any).type === this.type()) {
       this.chart.data = data;
       this.chart.options = options;
-      this.chart.update();
+      this.chart.update(animate ? undefined : 'none');
     } else {
       this.chart?.destroy();
       this.chart = new Chart(ctx, { type: this.type(), data, options });
