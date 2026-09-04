@@ -25,17 +25,9 @@
         <div class="trending-chart">
           <app-chart [data]="agentsChartData" [options]="agentsChartOptions"></app-chart>
         </div>
-        <ol class="ranked-list">
-          @for (agent of agents; track agent.id; let i = $index) {
-            <li>
-              <a [routerLink]="['/agents', agent.id]" class="ranked-row">
-                <span class="rank">{{ i + 1 }}</span>
-                <span class="ranked-name">{{ agent.name }}</span>
-                <span class="ranked-metric">{{ formatCount(agent.view_count) }} views</span>
-              </a>
-            </li>
-          }
-        </ol>
+        <div class="trending-footer">
+          <a routerLink="/agents" class="view-all-link">View all agents →</a>
+        </div>
       }
     </div>
 
@@ -60,17 +52,9 @@
         <div class="trending-chart">
           <app-chart [data]="serversChartData" [options]="serversChartOptions"></app-chart>
         </div>
-        <ol class="ranked-list">
-          @for (server of servers; track server.id; let i = $index) {
-            <li>
-              <a [routerLink]="['/mcp-servers', server.id]" class="ranked-row">
-                <span class="rank">{{ i + 1 }}</span>
-                <span class="ranked-name">{{ server.name }}</span>
-                <span class="ranked-metric">★ {{ formatCount(server.star_count) }}</span>
-              </a>
-            </li>
-          }
-        </ol>
+        <div class="trending-footer">
+          <a routerLink="/mcp-servers" class="view-all-link">View all MCP servers →</a>
+        </div>
       }
     </div>
   </div>
