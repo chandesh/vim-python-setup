@@ -22,6 +22,9 @@
       } @else if (agents.length === 0) {
         <p class="state-text">No agents yet.</p>
       } @else {
+        <div class="trending-chart">
+          <app-chart [data]="agentsChartData" [options]="agentsChartOptions"></app-chart>
+        </div>
         <ol class="ranked-list">
           @for (agent of agents; track agent.id; let i = $index) {
             <li>
@@ -54,6 +57,9 @@
       } @else if (servers.length === 0) {
         <p class="state-text">No MCP servers yet.</p>
       } @else {
+        <div class="trending-chart">
+          <app-chart [data]="serversChartData" [options]="serversChartOptions"></app-chart>
+        </div>
         <ol class="ranked-list">
           @for (server of servers; track server.id; let i = $index) {
             <li>

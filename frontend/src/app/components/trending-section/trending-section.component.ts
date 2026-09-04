@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ChartData, ChartOptions } from 'chart.js/auto';
 import { ApiService } from '../../services/api.service';
 import { Agent, MCPServer } from '../../models/agent.model';
+import { ChartComponent } from '../chart/chart.component';
 
 @Component({
   selector: 'app-trending-section',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, ChartComponent],
   templateUrl: './trending-section.component.html',
   styleUrls: ['./trending-section.component.css']
 })
@@ -68,5 +70,43 @@ export class TrendingSectionComponent implements OnInit {
       return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
     }
     return count.toString();
+  }
+
+  get agentsChartData(): ChartData {
+    return {
+      labels: this.agents.map(agent => agent.name),
+      datasets: [{ data: this.agents.map(agent => agent.view_count) }]
+    };
+  }
+
+  get serversChartData(): ChartData {
+    return {
+      labels: this.servers.map(server => server.name),
+      datasets: [{ data: this.servers.map(server => server.star_count) }]
+    };
+  }
+
+  get agentsChartOptions(): ChartOptions {
+    return {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (context: any) => `${this.formatCount(context.parsed.x)} views`
+          }
+        }
+      }
+    };
+  }
+
+  get serversChartOptions(): ChartOptions {
+    return {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (context: any) => `★ ${this.formatCount(context.parsed.x)}`
+          }
+        }
+      }
+    };
   }
 }

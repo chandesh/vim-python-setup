@@ -148,3 +148,9 @@
 .retry-button:hover {
   background-color: var(--accent-soft);
 }
+
+/* Comparison charts */
+.trending-chart {
+  height: 200px;
+  margin-bottom: 1rem;
+}
