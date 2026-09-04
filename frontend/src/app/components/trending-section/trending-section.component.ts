@@ -87,7 +87,7 @@ export class TrendingSectionComponent implements OnInit {
     plugins: {
       tooltip: {
         callbacks: {
-          label: (context: any) => `${this.formatCount(context.parsed.x)} views`
+          label: (context: any) => `${(context.raw ?? 0).toLocaleString('en-US')} views`
         }
       }
     }
@@ -97,7 +97,7 @@ export class TrendingSectionComponent implements OnInit {
     plugins: {
       tooltip: {
         callbacks: {
-          label: (context: any) => `★ ${this.formatCount(context.parsed.x)}`
+          label: (context: any) => `★ ${(context.raw ?? 0).toLocaleString('en-US')}`
         }
       }
     }
