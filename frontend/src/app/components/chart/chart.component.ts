@@ -45,7 +45,7 @@ export class ChartComponent {
       return;
     }
     const data = this.applyThemeColors();
-    const options = { ...this.buildOptions(), ...this.options() } as ChartOptions;
+    const options = this.mergeOptions(this.buildOptions(), this.options());
     if (this.chart && (this.chart.config as any).type === this.type()) {
       this.chart.data = data;
       this.chart.options = options;
@@ -96,5 +96,20 @@ export class ChartComponent {
         y: { ticks: { color: text }, grid: { display: false } }
       }
     };
+  }
+
+  /** Deep-merge consumer options over the theme defaults so nested plugin/scales config survives. */
+  private mergeOptions(defaults: ChartOptions, overrides: ChartOptions): ChartOptions {
+    const out: Record<string, any> = { ...(defaults as any) };
+    for (const key of Object.keys(overrides ?? {})) {
+      const val = (overrides as any)[key];
+      const base = out[key];
+      if (base && val && typeof base === 'object' && typeof val === 'object' && !Array.isArray(val)) {
+        out[key] = this.mergeOptions(base, val);
+      } else {
+        out[key] = val;
+      }
+    }
+    return out as ChartOptions;
   }
 }
